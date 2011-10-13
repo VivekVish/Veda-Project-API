@@ -24,7 +24,6 @@ switch (strtolower($this->request->getMethod()))
 
         if($payload->newLesson)
         {
-            var_dump('check');die();
             if($lesson->loadFromUri($this->request->getURI(),false))
             {
                 Error::generateError(53);
