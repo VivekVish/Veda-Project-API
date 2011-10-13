@@ -35,11 +35,20 @@ class User
         }
         else
         {
+            if($uriArr[1]=="yahoo!")
+            {
+                $provider="yahoo";
+            }
+            else
+            {
+                $provider=$uriArr[1];
+            }
+            
             $query = sprintf("SELECT usernames.username AS username, user_status.status AS status, providers.name AS provider FROM users 
                                 LEFT JOIN providers ON (users.provider_id = providers.provider_id)
                                 LEFT JOIN user_status ON (users.status_id = user_status.status_id)
                                 LEFT JOIN usernames ON (users.user_id = usernames.id)
-                                WHERE providers.name = '%s' AND users.open_id='%s'",$uriArr[1], pg_escape_string($openId));
+                                WHERE providers.name = '%s' AND users.open_id='%s'",pg_escape_string($provider), pg_escape_string($openId));
         }
         
         $usernameArray = $GLOBALS['transaction']->query($query);
