@@ -12,6 +12,8 @@ class Image
     protected $name = null;
     protected $imageType = null;
     protected $id = null; 
+    protected $citation = null;
+    protected $license = null;
    ########################################################
    #### Constructor          ##############################
    ########################################################
@@ -36,6 +38,8 @@ class Image
            $this->name = $payload->imageName;
            $this->courseId = Material::URIToId($payload->coursePath, "course");//turn URI contained in coursePath into an ID 
            $this->imageType = $payload->imageType;
+           $this->citation = $payload->imageCitation;
+           $this->license = $payload->imageLicense;
            return true;
        }
        
@@ -53,45 +57,52 @@ class Image
    
    public function loadFromId($id)
    {
-       $query=sprintf("SELECT * FROM images WHERE image_id = %s", pg_escape_string($id));//get all the stuff from the row where id=the id of the image we want
+       $query=sprintf("SELECT images.id as id,user_id,course_id,images.name as name,image_type,citation,document_license.name AS license FROM images LEFT JOIN document_license ON document_license.id=images.license_id WHERE images.id = %s", pg_escape_string($id));//get all the stuff from the row where id=the id of the image we want
        $result=$GLOBALS["transaction"]->query($query, 31);//store all the stuff from the row into an array called $results
        $this->courseId=$result[0]["course_id"];//load stuff from results array into member variable
        $this->imageType=$result[0]["image_type"];
        $this->name=$result[0]["name"];
-       
+       $this->citation=$result[0]["citation"];
+       $this->license=$result[0]["license"];       
    }
   
    public static function getImagesByCourse($courseId)
    {
-       $query=sprintf("SELECT * FROM images WHERE course_id = %s", pg_escape_string($courseId));//get all stuff with relevant courseId
+       $query=sprintf("SELECT images.id as id,user_id,course_id,images.name as name,image_type,citation,document_license.name AS license FROM images LEFT JOIN document_license ON document_license.id=images.license_id WHERE course_id = %s", pg_escape_string($courseId));//get all stuff with relevant courseId
        $result=$GLOBALS["transaction"]->query($query);
        $images=array();
-       for($i=0;$i<sizeOf($result);$i++) {
-           $images[i]=array("courseId" => $result[i]["course_id"], "imageType" => $result[i]["image_type"], "name" => $result[i]["name"], "userId" => $result[i]["user_id"], "imageId" => $result[i]["image_id"]);//add all of the relevant tables so $images[1]["name"] is the name of the second image
+       if($result!=="none")
+       {
+           for($i=0;$i<sizeOf($result);$i++) 
+           {
+               $images[$i]=array("courseId" => $result[$i]["course_id"], "imageType" => $result[$i]["image_type"], "name" => $result[$i]["name"], "userId" => $result[$i]["user_id"], "imageId" => $result[$i]["id"], "license"=>$result[$i]["license"], "citation"=>$result[$i]["citation"]);//add all of the relevant tables so $images[1]["name"] is the name of the second image
+           }
        }
-      
+
        return json_encode($images);
-     
    }
    
    
     
    public static function getImagesByUserId($userId)  
    {
-       $query=sprintf("SELECT * FROM images WHERE user_id = %s", pg_escape_string($userId));//get all stuff with relevant userId
+       $query=sprintf("SELECT images.id as id,user_id,course_id,images.name as name,image_type,citation,document_license.name AS license FROM images LEFT JOIN document_license ON document_license.id=images.license_id WHERE user_id = %s", pg_escape_string($userId));//get all stuff with relevant userId
        $result=$GLOBALS["transaction"]->query($query);
        $images=array();
-       for($i=0;$i<sizeOf($result);$i++) {
-           $images[i]=array("courseId" => $result[i]["course_id"], "imageType" => $result[i]["image_type"], "name" => $result[i]["name"], "userId" => $result[i]["user_id"], "imageId" => $result[i]["image_id"]);//add all of the relevant tables so $images[1]["name"] is the name of the second image
+       if($result!=="none")
+       {
+           for($i=0;$i<sizeOf($result);$i++)
+           {
+               $images[$i]=array("courseId" => $result[$i]["course_id"], "imageType" => $result[$i]["image_type"], "name" => $result[$i]["name"], "userId" => $result[$i]["user_id"], "imageId" => $result[$i]["id"], "license"=>$result[$i]["license"], "citation"=>$result[$i]["citation"]);//add all of the relevant tables so $images[1]["name"] is the name of the second image
+           }
        }
-      
+       
        return json_encode($images); 
-   
    }
   
    public function buildJSON()//package all image info into JSON for sending to application
    {
-       return json_encode(array("courseId"=>$this->courseId, "imageType"=>$this->imageType, "name"=>$this->name));
+       return json_encode(array("courseId"=>$this->courseId, "imageType"=>$this->imageType, "name"=>$this->name, "license"=>$this->license,"citation"=>$this->citation));
    }
    ########################################################
    #### Database interface functions ###############
@@ -100,7 +111,10 @@ class Image
    {
        if(!empty($this->courseId) && !empty($this->name) && !empty($userId))//as long as coursePath, name, &userId are set, good to go
        {
-           $query=sprintf("INSERT INTO images (user_id, course_id, image_type, name) VALUES (%s, %s, '%s', '%s')", pg_escape_string($userId), pg_escape_string($this->courseId),  pg_escape_string($this->imageType), pg_escape_string($this->name) );//insert into the images table for the columns u_i, c_i, i_t, name. VALUES tells the values to put in the table. pg_escape_string prevents injection
+           $query = sprintf("SELECT id FROM document_license WHERE name='%s'",pg_escape_string($this->license));
+           $result = $GLOBALS['transaction']->query($query,106);
+           $licenseId = $result[0]['id'];
+           $query=sprintf("INSERT INTO images (user_id, course_id, image_type, name, citation, license_id) VALUES (%s, %s,'%s','%s','%s','%s')", pg_escape_string($userId), pg_escape_string($this->courseId),  pg_escape_string($this->imageType), pg_escape_string($this->name),pg_escape_string($this->citation),pg_escape_string($licenseId));//insert into the images table for the columns u_i, c_i, i_t, name. VALUES tells the values to put in the table. pg_escape_string prevents injection
            $GLOBALS['transaction']->query($query, 96);//run the command contained in $query, and second arg is what to say on failure
           
            $query=sprintf("SELECT id FROM images WHERE course_id = %s AND name = '%s'", pg_escape_string($this->courseId), pg_escape_string($this->name)); //get id for specified image, find image by matching traits with args

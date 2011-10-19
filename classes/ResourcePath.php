@@ -55,7 +55,11 @@
                         }
                         break;
                     case 5:
-                        if($pathArray[1]=="material")
+                        if($pathArray[1]=="material"&&$pathArray[2]=="uploads"&&$pathArray[3]=="image")
+                        {
+                            $this->file = "image.php";
+                        }
+                        else if($pathArray[1]=="material")
                         {
                             $this->file = "course.php";
                         }

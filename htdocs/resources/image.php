@@ -45,13 +45,12 @@
             if($image->loadFromUri($this->request->getUri()))//loads image
             {
                 if($image->delete())
-		{
-			$this->setStatus(true);
-			break;
-		}
-               
+                {
+                    $this->response->setPayload("Success.");
+                    $this->setStatus(true);
+                    break;
+                }
             }
-            
             else
             {
                 $this->setStatus(false);
