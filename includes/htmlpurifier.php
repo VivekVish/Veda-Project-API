@@ -1,6 +1,6 @@
 <?php
     require_once("includes/htmlpurifier/library/HTMLPurifier.auto.php");
-    $HTML_Allowed_Elms = 'section,p,ul,ol,li,span,div,h2,h3,h4,h5,h6,h7,table,tbody,tr,td,th,blockquote';
+    $HTML_Allowed_Elms = 'section,p,ul,ol,li,span,div,h2,h3,h4,h5,h6,h7,table,tbody,tr,td,th,blockquote,br';
     
     $purifierConfig = HTMLPurifier_Config::createDefault();
 
