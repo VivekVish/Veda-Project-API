@@ -121,7 +121,10 @@ class ContentAutosave extends Material
         
         $this->parentId = parent::URIToId($uri,$this->elementType);
         
-        $this->content = html_entity_decode($payload->content);
+        $content = html_entity_decode($payload->content);
+        require_once("includes/htmlpurifier.php");
+        $this->content = $purifier->purify($content);
+        
         $this->loadILOsFromArray(json_decode($payload->ilos));
         
         if(preg_match('/<script/',$this->content)>0)

@@ -54,10 +54,12 @@ Class Lesson extends Material
 	public function loadFromPayload($payload,$path)
 	{
 		try
-		{
+		{             
             if(isset($payload->content))
             {
                 $content = html_entity_decode($payload->content);
+                require_once("includes/htmlpurifier.php");
+                $content = $purifier->purify($content);
             }
             else
             {

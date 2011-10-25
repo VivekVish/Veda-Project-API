@@ -56,6 +56,8 @@ Class Discussion extends Material
 		try
 		{
             $content = html_entity_decode($payload->content);
+            require_once("includes/htmlpurifier.php");
+            $content = $purifier->purify($content);
             
             if(preg_match('/<script/',$content)>0)
             {
