@@ -222,6 +222,7 @@ class ContentAutosave extends Material
 			$ilo->save($this->userId,$ILOIds);
 		}
         
+        Lesson::checkILOsExist($this->ilos,$ILOIds);
         $this->deleteOldEntries();
         
         return true;

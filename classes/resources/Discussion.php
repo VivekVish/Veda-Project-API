@@ -203,6 +203,8 @@ Class Discussion extends Material
         $revisionRow->loadFromData(null,$this->id,$this->name,$this->content,$userId,null);
         $revisionRow->save();
         
+        require_once("classes/resources/Lesson.php");
+        Lesson::checkILOsExist($this->ilos,$newILOIds);
         $this->saveIlos($userId,$newILOIds,$oldILOIds);
 
         return true;

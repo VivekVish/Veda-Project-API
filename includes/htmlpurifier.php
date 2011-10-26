@@ -1,10 +1,12 @@
 <?php
     require_once("includes/htmlpurifier/library/HTMLPurifier.auto.php");
     $HTML_Allowed_Elms = 'section,p,ul,ol,li,span,div,h2,h3,h4,h5,h6,h7,table,tbody,tr,td,th,blockquote,br';
+    $HTML_Allowed_Classes = 'ilo';
     
     $purifierConfig = HTMLPurifier_Config::createDefault();
 
     $purifierConfig->set('Attr.EnableID', true);
+    $purifierConfig->set('Attr.AllowedClasses', $HTML_Allowed_Classes);
     $purifierConfig->set('Attr.IDBlacklistRegexp','/^(?!ilo)[0-9]+/');
     $purifierConfig->set('Core.Encoding', 'UTF-8'); // replace with your encoding
     $purifierConfig->set('HTML.Doctype', 'XHTML 1.0 Transitional'); // replace with your doctype

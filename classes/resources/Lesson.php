@@ -219,8 +219,9 @@ Class Lesson extends Material
             $revisionRow->loadFromData(null,$this->id,$this->name,$this->content,$userId,null);
             $revisionRow->save();
 
+            $this->checkILOsExist($this->ilos,$newILOIds);
             $this->saveIlos($userId,$newILOIds,$oldILOIds);
-                
+            
 			return true;
 		}
 
@@ -520,6 +521,27 @@ Class Lesson extends Material
 		}
 		
 		return;
+    }
+    
+    # Ensures that ILOs in HTML exist as submitted JSON
+    public static function checkILOsExist($submittedILOs,$newILOIds)
+    {
+        $jsonILOIds = array();
+        foreach($submittedILOs as $iloId=>$iloContent)
+        {
+            array_push($jsonILOIds,$iloId);
+        }
+        
+        $missingILOs = array_diff($newILOIds,$jsonILOIds);
+        
+        foreach($missingILOs as $iloId)
+        {
+            $ilo = new Ilo();
+            if(!$ilo->loadById($iloId))
+            {
+                Error::generateError(107);
+            }
+        }
     }
     
     # Save's ilo's to DB

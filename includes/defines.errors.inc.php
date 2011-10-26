@@ -106,3 +106,4 @@
     define("ERROR_104","Unable to delete image.");define("DEBUGERROR_104","Unable to delete image from images table in Image::save().");
     define("ERROR_105","Unable to load Test Blueprint.");define("DEBUGERROR_105","Unable to load Test Blueprint from test_blueprint table in TestBlueprint::loadFromID().");
     define("ERROR_106","Unable to load image.");define("DEBUGERROR_106","Unable to load image_license in Image::save().");
+    define("ERROR_107","Unsubmitted ILO in HTML.");define("DEBUGERROR_107","Unsubmitted ILO in HTML in Lesson::checkILOsExist.");
