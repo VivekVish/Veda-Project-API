@@ -107,3 +107,4 @@
     define("ERROR_105","Unable to load Test Blueprint.");define("DEBUGERROR_105","Unable to load Test Blueprint from test_blueprint table in TestBlueprint::loadFromID().");
     define("ERROR_106","Unable to load image.");define("DEBUGERROR_106","Unable to load image_license in Image::save().");
     define("ERROR_107","Unsubmitted ILO in HTML.");define("DEBUGERROR_107","Unsubmitted ILO in HTML in Lesson::checkILOsExist.");
+    define("ERROR_108","Unable to log in.");define("DEBUGERROR_108","Unable to set last_logged_in in users table in User::login.");

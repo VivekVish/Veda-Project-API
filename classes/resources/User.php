@@ -27,11 +27,11 @@ class User
     public function loadFromUri($uri)
     {
         $uriArr = explode("/",trim($uri,"/"));
-        $openId = preg_replace('/FORWARDSLASHCODE/','/',urldecode($uriArr[2]));
+        $this->openId = preg_replace('/FORWARDSLASHCODE/','/',urldecode($uriArr[2]));
 
         if($uriArr[1]=="username")
         {
-            $query = sprintf("SELECT username FROM usernames WHERE LOWER(username)='%s'",pg_escape_string(strtolower($openId)));
+            $query = sprintf("SELECT username FROM usernames WHERE LOWER(username)='%s'",pg_escape_string(strtolower($this->openId)));
         }
         else
         {
@@ -48,7 +48,7 @@ class User
                                 LEFT JOIN providers ON (users.provider_id = providers.provider_id)
                                 LEFT JOIN user_status ON (users.status_id = user_status.status_id)
                                 LEFT JOIN usernames ON (users.user_id = usernames.id)
-                                WHERE providers.name = '%s' AND users.open_id='%s'",pg_escape_string($provider), pg_escape_string($openId));
+                                WHERE providers.name = '%s' AND users.open_id='%s'",pg_escape_string($provider), pg_escape_string($this->openId));
         }
         
         $usernameArray = $GLOBALS['transaction']->query($query);
@@ -69,6 +69,7 @@ class User
                 {
                     $this->provider="yahoo";
                 }
+                $this->login();
             }
         }
         
@@ -161,6 +162,12 @@ class User
         }
         
         return true;
+    }
+    
+    public function login()
+    {
+        $query = sprintf("UPDATE users SET last_logged_in=CURRENT_TIMESTAMP WHERE open_id='%s'",pg_escape_string($this->openId));
+        $GLOBALS['transaction']->query($query,108);
     }
     
     ########################################################
