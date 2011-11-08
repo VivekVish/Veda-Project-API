@@ -8,7 +8,7 @@ Class QuestionBlueprint
 
 	private $db = null;
 	private $id = null;
-	private $blueprint = null;
+	private $blueprint = null;//is this content? or something else?
 	private $quizBlueprintId  = null;
 	private $type_id = null;
 	
