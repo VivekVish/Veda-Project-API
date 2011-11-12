@@ -32,6 +32,9 @@
                             case "nextiloid":
                                 $this->file = "getNextIloId.php";
                                 break;
+                            case "nextcitationid":
+                                $this->file = "getNextCitationId.php";
+                                break;
                         }
                         break;
                     case 3:
@@ -42,6 +45,10 @@
                         else if($pathArray[1]=="ilo")
                         {
 							$this->file = "ilo.php";
+                        }
+                        else if($pathArray[1]=="citation")
+                        {
+                            $this->file = "citation.php";
                         }
                         break;
                     case 4:

@@ -2,6 +2,8 @@
 
 require_once("classes/resources/Material.php");
 require_once("classes/resources/RevisionHistory.php");
+require_once("classes/resources/Ilo.php");
+require_once("classes/resources/Citation.php");
 
 Class Discussion extends Material
 {
@@ -14,9 +16,11 @@ Class Discussion extends Material
     protected $name = null;
 	protected $content = null;
 	protected $ilos = array();
+    protected $citations = array();
 	protected $ilosIntact = null;
     protected $json = null;
     protected $notes = null;
+    protected $userId = null;
     
 	########################################################
 	#### Constructor and main function #####################
@@ -77,15 +81,19 @@ Class Discussion extends Material
                 $this->elementId = parent::URIToId($uri,"quiz");
                 $this->elementType = "quiz";
             }
+            
+            $content = preg_replace('/~~~~/',"{$payload->username} ".date('F jS, Y h:i:s A'), $content);
 
             $this->id = parent::URIToId($uri,"discussion");
             
             $this->name = preg_replace('/_/', ' ', urldecode($uriArr[LESSON_INDEX])).($uriArr[CONTENT_TYPE_INDEX] == "quiz" ? "Quiz" : "")." Discussion";
             
 			$this->content = $content;
+            $this->userId = User::usernameToId($payload->username);
+            $this->path=$path;
 			$this->loadILOsFromArray(json_decode($payload->ilos));
+            $this->loadCitationsFromArray(json_decode($payload->citations));
 			$this->ilosIntact = true;
-			$this->path=$path;
 			return true;
 		}
 		catch (Exception $e)
@@ -206,6 +214,7 @@ Class Discussion extends Material
         require_once("classes/resources/Lesson.php");
         Lesson::checkILOsExist($this->ilos,$newILOIds);
         $this->saveIlos($userId,$newILOIds,$oldILOIds);
+        $this->saveCitations();
 
         return true;
 
@@ -311,6 +320,47 @@ Class Discussion extends Material
 			$this->ilosIntact = true;
 		}
 	}
+    
+    ########################################################
+	#### Functions for working with Citations ##############
+	########################################################
+    public function loadCitationsFromArray($ArrayOfCitations)
+    {
+        if(sizeof($ArrayOfCitations)>0)
+		{
+        	foreach ($ArrayOfCitations as $ndx => $ilo)
+			{
+				$tmp[$ndx] = $ilo;
+			}
+       		return $this->setCitations($tmp);
+		}
+		
+		return;
+    }
+    
+    public function setCitations($citations)
+    {
+        # Kill old ilos
+		unset($this->citations);
+
+		# Setup pattern for type extraction
+		foreach ($citations as $id => $citation)
+		{
+            $id = substr($id, 8);
+            $this->citations[$id] = new Citation();
+            $payload = array("user_id"=>$this->userId,"course_id"=>Material::URIToId($this->path,"course"),"citation"=>$citation,"id"=>$id);
+            $this->citations[$id]->loadFromPayload($payload);
+		}
+		return true;
+    }
+    
+    public function saveCitations()
+    {
+        foreach($this->citations as $citation)
+		{
+			$citation->save();
+		}
+    }
 
 	########################################################
 	### Getters and Setters ################################

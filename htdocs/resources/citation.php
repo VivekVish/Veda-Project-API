@@ -1,11 +1,11 @@
 <?php
 
-require_once("classes/resources/Ilo.php");
+require_once("classes/resources/Citation.php");
 
 $uri = trim($this->request->getUri(), "/");
 $uriArr = explode('/',$uri);
 
-$ids = explode(',',preg_replace('/"/',"",preg_replace('/ilo/', "", $uriArr[2])));
+$ids = explode(',',preg_replace('/"/',"",preg_replace('/citation/', "", $uriArr[2])));
 
 switch (strtolower($this->request->getMethod()))
 {
@@ -13,10 +13,10 @@ switch (strtolower($this->request->getMethod()))
         $response = array();
         foreach($ids as $id)
         {
-            $ilo = new Ilo();
-            if($ilo->loadById($id))
+            $citation = new Citation();
+            if($citation->loadFromId($id))
             {
-                $response["ilo".$id]=$ilo->getContent();
+                $response["citation".$id]=$citation->getCitation();
             }
         }
         $this->response->setPayload(json_encode($response));

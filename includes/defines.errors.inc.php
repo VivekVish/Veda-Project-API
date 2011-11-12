@@ -108,3 +108,7 @@
     define("ERROR_106","Unable to load image.");define("DEBUGERROR_106","Unable to load image_license in Image::save().");
     define("ERROR_107","Unsubmitted ILO in HTML.");define("DEBUGERROR_107","Unsubmitted ILO in HTML in Lesson::checkILOsExist.");
     define("ERROR_108","Unable to log in.");define("DEBUGERROR_108","Unable to set last_logged_in in users table in User::login.");
+    define("ERROR_109","Unable to get next ILO Id.");define("DEBUGERROR_109","Unable to get next ILO Id in lesson.php.");
+    define("ERROR_110","Unable to load citation.");define("DEBUGERROR_110","Unable to load citation by Id in Citation::loadFromId().");
+    define("ERROR_111","Unable to load citation.");define("DEBUGERROR_111","Unable to load citation by Id in Citation::loadFromId().");
+    define("ERROR_112","Unable to save citation.");define("DEBUGERROR_112","Unable to save citation in Citation::save()");

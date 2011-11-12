@@ -3,6 +3,7 @@
 require_once("classes/resources/Material.php");
 require_once("classes/resources/RevisionHistory.php");
 require_once("classes/resources/Ilo.php");
+require_once("classes/resources/Citation.php");
 
 Class Lesson extends Material
 {
@@ -13,10 +14,12 @@ Class Lesson extends Material
 	protected $parentId = null;
 	protected $content = null;
 	protected $ilos = array();
+    protected $citations = array();
 	protected $ilosIntact = null;
     protected $order = null;
     protected $json = null;
     protected $notes = null;
+    protected $userId = null;
     
 	########################################################
 	#### Constructor and main function #####################
@@ -81,9 +84,11 @@ Class Lesson extends Material
 			$this->description = (string)$payload->description;
 			$this->content = $content;
 			$this->active = ((string)$payload->active == "true") ? true : false;
+            $this->userId = User::usernameToId($payload->username);
+            $this->path=$path;
 			$this->loadILOsFromArray(json_decode($payload->ilos));
+            $this->loadCitationsFromArray(json_decode($payload->citations));
 			$this->ilosIntact = true;
-			$this->path=$path;
 			return true;
 		}
 		catch (Exception $e)
@@ -147,22 +152,6 @@ Class Lesson extends Material
 	########################################################
 	#### Database interface functions ######################
 	########################################################
-
-    public static function getILOIds($html)
-    {
-        require_once('includes/html5lib/Parser.php');
-        $dom = HTML5_Parser::parse(html_entity_decode(stripslashes("<html>".$html."</html>")));
-        $xmlContent = new SimpleXMLElement($dom->saveXml());
-        $iloPlaceHolderArray = $xmlContent->xpath("//*[starts-with(@id,'ilo')]");
-        $iloIds = array();
-
-        foreach($iloPlaceHolderArray as $placeholder)
-        {
-            array_push($iloIds, preg_replace("/ilo/","",(string)$placeholder->attributes()->id));
-        }
-
-        return $iloIds;
-    }
     
 	# Save lesson (creates one if no id is set)
 	public function save($userId,$notes=null)
@@ -221,6 +210,8 @@ Class Lesson extends Material
 
             $this->checkILOsExist($this->ilos,$newILOIds);
             $this->saveIlos($userId,$newILOIds,$oldILOIds);
+            
+            $this->saveCitations();
             
 			return true;
 		}
@@ -481,6 +472,22 @@ Class Lesson extends Material
 	########################################################
 	#### Functions for working with ILO's ##################
 	########################################################
+    
+    public static function getILOIds($html)
+    {
+        require_once('includes/html5lib/Parser.php');
+        $dom = HTML5_Parser::parse(html_entity_decode(stripslashes("<html>".$html."</html>")));
+        $xmlContent = new SimpleXMLElement($dom->saveXml());
+        $iloPlaceHolderArray = $xmlContent->xpath("//*[starts-with(@id,'ilo')]");
+        $iloIds = array();
+
+        foreach($iloPlaceHolderArray as $placeholder)
+        {
+            array_push($iloIds, preg_replace("/ilo/","",(string)$placeholder->attributes()->id));
+        }
+
+        return $iloIds;
+    }
 
 	# Load's array of ILO's from DB or from content
 	public function loadIlos()
@@ -559,7 +566,64 @@ Class Lesson extends Material
 			$ilo->save($userId,$newILOIds);
 		}
 	}
+    
+    public function setILOs($ilos)
+	{
+		# Kill old ilos
+		unset($this->ilos);
 
+		# Setup pattern for type extraction
+		foreach ($ilos as $id => $ilo)
+		{
+            $type= $ilo->type;
+            $id = substr($id, 3);
+            $content = json_encode($ilo);
+            $this->ilos[$id] = new Ilo($id, $content, $type);
+		}
+		return true;
+	}
+    
+    ########################################################
+	#### Functions for working with Citations ##############
+	########################################################
+    public function loadCitationsFromArray($ArrayOfCitations)
+    {
+        if(sizeof($ArrayOfCitations)>0)
+		{
+        	foreach ($ArrayOfCitations as $ndx => $ilo)
+			{
+				$tmp[$ndx] = $ilo;
+			}
+       		return $this->setCitations($tmp);
+		}
+		
+		return;
+    }
+    
+    public function setCitations($citations)
+    {
+        # Kill old ilos
+		unset($this->citations);
+
+		# Setup pattern for type extraction
+		foreach ($citations as $id => $citation)
+		{
+            $id = substr($id, 8);
+            $this->citations[$id] = new Citation();
+            $payload = array("user_id"=>$this->userId,"course_id"=>Material::URIToId($this->path,"course"),"citation"=>$citation,"id"=>$id);
+            $this->citations[$id]->loadFromPayload($payload);
+		}
+		return true;
+    }
+    
+    public function saveCitations()
+    {
+        foreach($this->citations as $citation)
+		{
+			$citation->save();
+		}
+    }
+    
 	########################################################
 	### Getters and Setters ################################
 	########################################################
@@ -580,22 +644,6 @@ Class Lesson extends Material
 	{
 		$this->name = $name;
 	}
-
-	public function setILOs($ilos)
-	{
-		# Kill old ilos
-		unset($this->ilos);
-
-		# Setup pattern for type extraction
-		foreach ($ilos as $id => $ilo)
-		{
-            $type= $ilo->type;
-            $id = substr($id, 3);
-            $content = json_encode($ilo);
-            $this->ilos[$id] = new Ilo($id, $content, $type);
-		}
-		return true;
-	}	
 
 	public function setPath($path)
 	{

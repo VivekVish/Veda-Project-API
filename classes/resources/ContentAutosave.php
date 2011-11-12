@@ -13,6 +13,7 @@ class ContentAutosave extends Material
     protected $content = null;
     protected $ilos = array();
     protected $json = null;
+    protected $citations = array();
     
     ########################################################
 	#### Constructor and main function #####################
@@ -124,8 +125,10 @@ class ContentAutosave extends Material
         $content = html_entity_decode($payload->content);
         require_once("includes/htmlpurifier.php");
         $this->content = $purifier->purify($content);
+        $this->path = $path;
         
         $this->loadILOsFromArray(json_decode($payload->ilos));
+        $this->loadCitationsFromArray(json_decode($payload->citations));
         
         if(preg_match('/<script/',$this->content)>0)
         {
@@ -224,6 +227,8 @@ class ContentAutosave extends Material
         
         Lesson::checkILOsExist($this->ilos,$ILOIds);
         $this->deleteOldEntries();
+        
+        $this->saveCitations();
         
         return true;
     }
@@ -389,6 +394,47 @@ class ContentAutosave extends Material
     }
     
     ########################################################
+	#### Functions for working with Citations ##############
+	########################################################
+    public function loadCitationsFromArray($ArrayOfCitations)
+    {
+        if(sizeof($ArrayOfCitations)>0)
+		{
+        	foreach ($ArrayOfCitations as $ndx => $ilo)
+			{
+				$tmp[$ndx] = $ilo;
+			}
+       		return $this->setCitations($tmp);
+		}
+		
+		return;
+    }
+    
+    public function setCitations($citations)
+    {
+        # Kill old ilos
+		unset($this->citations);
+
+		# Setup pattern for type extraction
+		foreach ($citations as $id => $citation)
+		{
+            $id = substr($id, 8);
+            $this->citations[$id] = new Citation();
+            $payload = array("user_id"=>$this->userId,"course_id"=>Material::URIToId($this->path,"course"),"citation"=>$citation,"id"=>$id);
+            $this->citations[$id]->loadFromPayload($payload);
+		}
+		return true;
+    }
+    
+    public function saveCitations()
+    {
+        foreach($this->citations as $citation)
+		{
+			$citation->save();
+		}
+    }
+    
+    ########################################################
 	### Getters and Setters ################################
 	########################################################
     
@@ -397,5 +443,3 @@ class ContentAutosave extends Material
         return $this->json;
     }
 }
-
-?>
