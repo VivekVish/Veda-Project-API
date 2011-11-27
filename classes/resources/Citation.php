@@ -4,7 +4,6 @@ require_once("classes/resources/Material.php");
 
 class Citation
 {
-
     protected $id = null;
     protected $user_id = null;
     protected $course_id = null;
@@ -16,26 +15,24 @@ class Citation
 	########################################################
 
     public function loadFromPayload($payload) 
-    {  //gets image info sent from application when uploaded. Because this function is only used to create a new image, there is no existing URL and it is not an argument
+    {
         if (!empty($payload))
-        { //confirm payload is not empty
-            //$payload[whatever] is set when the application sends the payload
+        {
             $this->user_id = $payload['user_id'];
-            $this->course_id = $payload['course_id']; //turn URI contained in coursePath into an ID
+            $this->course_id = $payload['course_id'];
             $this->active = true;
             $this->citation = $payload['citation'];
             $this->id=$payload['id'];
             return true;
         }
 
-        return false; //if the payload is empty, fail
+        return false;
     }
 
     public function loadFromUri($uri) 
-    { //grab image info from database
-        //get image by its ID
+    {
         $uriArr = explode("/", trim($uri, "/"));
-        $this->id = substr($uriArr[2],8); //data/citations/id
+        $this->id = substr($uriArr[2],8);
         $this->loadFromId($this->id);
 
         return true;
@@ -43,9 +40,9 @@ class Citation
 
     public function loadFromId($id)
     {
-        $query = sprintf("SELECT * FROM citations WHERE id = %s", pg_escape_string($id)); //load latest
-        $result = $GLOBALS["transaction"]->query($query, 110); //store all the stuff from the row into an array called $results
-        $this->courseId = $result[0]["course_id"]; //load stuff from results array into member variable
+        $query = sprintf("SELECT * FROM citations WHERE id = %s", pg_escape_string($id));
+        $result = $GLOBALS["transaction"]->query($query, 110);
+        $this->courseId = $result[0]["course_id"];
         $this->user_id = $result[0]["user_id"];
         $this->citation = $result[0]["citation"];
         $this->active = $result[0]["active"];

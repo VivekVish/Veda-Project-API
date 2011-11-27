@@ -29,7 +29,7 @@ Class Subject extends Material
 		{
             $this->path = $uri;
 			$this->id = parent::URIToId($uri,"subject");
-			$query = sprintf("SELECT subject.*, field.name AS field_name FROM subject LEFT JOIN field ON (subject.field_id = field.id) WHERE subject.id='%s'",  pg_escape_string($this->id));
+			$query = sprintf("SELECT subject.*, field.name AS field_name FROM subject LEFT JOIN field ON (subject.field_id = field.id) WHERE subject.id='%s' ORDER BY element_order",  pg_escape_string($this->id));
 			$result = $GLOBALS['transaction']->query($query,79);
 
             $row = $result[0];
@@ -75,7 +75,7 @@ Class Subject extends Material
 	{
 		if (!empty($this->id))
 		{
-			$query = sprintf("SELECT * FROM course WHERE subject_id = %s", pg_escape_string($this->id));
+			$query = sprintf("SELECT * FROM course WHERE subject_id = %s ORDER BY element_order", pg_escape_string($this->id));
 			$result = $GLOBALS['transaction']->query($query);
 			if ($result!==false&&$result!=="none")
 			{

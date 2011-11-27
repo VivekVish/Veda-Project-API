@@ -70,7 +70,7 @@ Class Course extends Material
     
     public function loadFromId($id)
     {
-        $query = sprintf("SELECT course.*, subject.name AS subject_name FROM course LEFT JOIN subject ON (course.subject_id = subject.id) WHERE course.id='%s'",pg_escape_string($id));
+        $query = sprintf("SELECT course.*, subject.name AS subject_name FROM course LEFT JOIN subject ON (course.subject_id = subject.id) WHERE course.id='%s'  ORDER BY element_order",pg_escape_string($id));
         $result = $GLOBALS['transaction']->query($query,12);
 
         $row = $result[0];

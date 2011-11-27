@@ -4,7 +4,7 @@
 switch (strtolower($this->request->getMethod()))
 {
 	case 'get':
-		$query = sprintf("SELECT * FROM field WHERE active IS TRUE");
+		$query = sprintf("SELECT * FROM field WHERE active IS TRUE ORDER BY element_order");
 		$result = $GLOBALS['transaction']->query($query,24);
         $xml = "<data><schemaVersion>1.0</schemaVersion><timestamp>".date("c")."</timestamp>";
         $xml .= "<fields>";
