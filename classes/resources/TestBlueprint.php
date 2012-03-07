@@ -21,12 +21,12 @@ class TestBlueprint {
         //get BP by its ID
         $uriArr = explode("/", trim($uri, "/")); //puts all the stuff like etc/foo/blah into array with {etc, foo, blah}
         $this->id = $uriArr[4]; //index in URI for BPs
-        $this->loadFromID();
+        $this->loadFromID($this->id);
         return true;
     }
 
-    public function loadFromId() {
-        $query = sprintf("SELECT * FROM test_blueprint WHERE id = %s", pg_escape_string($this->id)); //get all the stuff from the row where id=the id of the test we want
+    public function loadFromId($id) {
+        $query = sprintf("SELECT * FROM test_blueprint WHERE id = %s", pg_escape_string($id)); //get all the stuff from the row where id=the id of the test we want
         $result = $GLOBALS["transaction"]->query($query); //store all the stuff from the row into an array called $results
 
         $this->content_type = $result["content_type"];
@@ -50,9 +50,12 @@ class TestBlueprint {
             }
         }
     }
-
+    
+    
     public function buildJSON() {//gets data, stores it as JSON
         $this->JSONData = json_encode(array("content_type" => $this->content_type, "content_id" => $this->content_id, "number_of_questions" => $this->number_of_questions, "child_data" => $this->childData));
+        
+        
     }
 
     public function getJSON() {//returns stored data
@@ -106,6 +109,7 @@ class TestBlueprint {
         $latest_revision_id = $GLOBALS['transaction']->query($query); //this is a STRING
         $latest_revision_id = intval($latest_revision_id) + 1; //latest_revision_id is now INCREMENTED
         $query = sprintf("INSERT INTO test_blueprint (id, content_type, content_id, number_of_questions, revision_id) VALUES (%s, %s, %s, %s, %s)", pg_escape_string($this->id), pg_escape_string($this->content_type), pg_escape_string($this->content_id), pg_escape_string($this->number_of_questions), pg_escape_string($latest_revision_id));
+        $GLOBALS['transaction']->query($query);
     }
 
 }

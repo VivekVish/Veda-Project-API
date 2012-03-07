@@ -8,7 +8,8 @@
         case 'get':
             
             if($testBlueprint->loadFromUri($this->request->getUri())){
-                $this->response->setPayload($testBlueprint->buildJSON());
+                $testBlueprint->buildJSON();
+                $this->response->setPayload($testBlueprint->getJSON());
                 $this->setStatus(true);
                 break;
            }
