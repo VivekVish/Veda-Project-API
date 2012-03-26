@@ -340,7 +340,7 @@ Class Lesson extends Material
             $GLOBALS['transaction']->query($query,42);
 		}
         
-        $query = sprintf("INSERT INTO move_content (old_parent_id, new_parent_id, old_order, new_order, user_id, element_type, move_date) VALUES (%s,%s,%s,%s,%s,'lesson',CURRENT_TIMESTAMP)",$oldSectionId,$newSectionId,$this->order,$newOrder,$userId);
+        $query = sprintf("INSERT INTO move_content (old_parent_id, new_parent_id, old_order, new_order, user_id, element_id,element_type, move_date) VALUES (%s,%s,%s,%s,%s,%s,'lesson',CURRENT_TIMESTAMP)",$oldSectionId,$newSectionId,$this->order,$newOrder,$userId,$this->id);
         $GLOBALS['transaction']->query($query,113);
         
         return true;

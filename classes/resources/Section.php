@@ -270,7 +270,7 @@ Class Section extends Material
             $result = $GLOBALS['transaction']->query($query,71);
 		}
         
-        $query = sprintf("INSERT INTO move_content (old_parent_id, new_parent_id, old_order, new_order, user_id, element_type, move_date) VALUES (%s,%s,%s,%s,%s,'section',CURRENT_TIMESTAMP)",$oldCourseId,$newCourseId,$this->order,$newOrder,$userId);
+        $query = sprintf("INSERT INTO move_content (old_parent_id, new_parent_id, old_order, new_order, user_id, element_id, element_type,  move_date) VALUES (%s,%s,%s,%s,%s,%s,'section',CURRENT_TIMESTAMP)",$oldCourseId,$newCourseId,$this->order,$newOrder,$userId,$this->id);
         $GLOBALS['transaction']->query($query,114);
         
         return true;
