@@ -112,3 +112,5 @@
     define("ERROR_110","Unable to load citation.");define("DEBUGERROR_110","Unable to load citation by Id in Citation::loadFromId().");
     define("ERROR_111","Unable to load citation.");define("DEBUGERROR_111","Unable to load citation by Id in Citation::loadFromId().");
     define("ERROR_112","Unable to save citation.");define("DEBUGERROR_112","Unable to save citation in Citation::save()");
+    define("ERROR_113","Unable to adjust lesson order.");define("DEBUGERROR_113","Unable to record position change in move_content table in Lesson::setPosition().");
+    define("ERROR_114","Unable to adjust section order.");define("DEBUGERROR_114","Unable to record position change in move_content table in Section::setPosition().");

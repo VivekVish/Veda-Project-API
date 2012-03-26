@@ -220,7 +220,7 @@ Class Section extends Material
 		return false;
 	}
     
-    public function setPosition($newPath,$newOrder,$oldPath)
+    public function setPosition($newPath,$newOrder,$oldPath,$userId)
 	{
 		$newCourseId = parent::URIToId($newPath,"course");		
 		$oldCourseId = parent::URIToId($oldPath,"course");
@@ -248,8 +248,6 @@ Class Section extends Material
                         pg_escape_string($newOrder),
                         pg_escape_string($this->id));
             $result = $GLOBALS['transaction']->query($query,71);
-
-            return true;
 		}
 		else
 		{
@@ -270,9 +268,12 @@ Class Section extends Material
                                 pg_escape_string($this->id));
             
             $result = $GLOBALS['transaction']->query($query,71);
-            
-            return true;
 		}
+        
+        $query = sprintf("INSERT INTO move_content (old_parent_id, new_parent_id, old_order, new_order, user_id, element_type, move_date) VALUES (%s,%s,%s,%s,%s,'section',CURRENT_TIMESTAMP)",$oldCourseId,$newCourseId,$this->order,$newOrder,$userId);
+        $GLOBALS['transaction']->query($query,114);
+        
+        return true;
 	}
 
     public function rename($name,$userId)

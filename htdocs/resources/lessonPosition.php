@@ -1,5 +1,6 @@
 <?php
 	require_once("classes/resources/Lesson.php");
+    require_once("classes/resources/User.php");
 	$lesson = new Lesson();
 
 	switch(strtolower($this->request->getMethod()))
@@ -11,7 +12,7 @@
 			$payload = json_decode($this->request->getPayload());
 			if($lesson->loadFromUri($payload->oldPath."content/"))
 			{
-				if($lesson->setPosition($payload->newPath,$payload->newOrder,$payload->oldPath))
+				if($lesson->setPosition($payload->newPath,$payload->newOrder,$payload->oldPath,User::usernameToId($payload->username)))
 				{
 					$this->response->setPayload("Success.");
 					$this->response->setContentType("text/xml");

@@ -280,7 +280,7 @@ Class Lesson extends Material
 	
 
 	# Set Position
-	public function setPosition($newPath,$newOrder,$oldPath)
+	public function setPosition($newPath,$newOrder,$oldPath,$userId)
 	{
 		$newSectionId = parent::URIToId($newPath,"section");
 		$oldSectionId = parent::URIToId($oldPath,"section");
@@ -317,8 +317,6 @@ Class Lesson extends Material
                         pg_escape_string($newOrder),
                         pg_escape_string($this->id));
             $GLOBALS['transaction']->query($query,42);
-            
-            return true;
 		}
 		else
 		{
@@ -340,9 +338,12 @@ Class Lesson extends Material
                                 pg_escape_string($this->id));
             
             $GLOBALS['transaction']->query($query,42);
-
-            return true;
 		}
+        
+        $query = sprintf("INSERT INTO move_content (old_parent_id, new_parent_id, old_order, new_order, user_id, element_type, move_date) VALUES (%s,%s,%s,%s,%s,'lesson',CURRENT_TIMESTAMP)",$oldSectionId,$newSectionId,$this->order,$newOrder,$userId);
+        $GLOBALS['transaction']->query($query,113);
+        
+        return true;
 	}
     
     public function rename($name,$userId)

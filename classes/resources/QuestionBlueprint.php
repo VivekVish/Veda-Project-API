@@ -4,9 +4,7 @@ require_once("classes/resources/Material.php");
 require_once("classes/resources/AnswerFieldBlueprint.php");
 
 Class QuestionBlueprint {
-    # MAKE ANSWERFIELD LOADER FUNCTION to load FROM answerfield_id
-    # make load from whatever functions
-    //#other stuff in TestBlueprint
+   
     ##################################################
     ##### Member Variables ###########################
     ##################################################
@@ -187,7 +185,11 @@ Class QuestionBlueprint {
         $this->user_id = $user_id;
     }
 
-    /* old version----------vvvv --do not use-- vvvv------------
+  
+}
+
+
+  /* old version----------vvvv --do not use-- vvvv------------
      * 
       ##################################################
       ##### Member Variables ###########################
@@ -297,6 +299,7 @@ Class QuestionBlueprint {
       $this->blueprint = $blueprint;
       }
      */
-}
 
 ?>
+
+
