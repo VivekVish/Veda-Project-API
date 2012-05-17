@@ -1,15 +1,16 @@
 <?php
 
-require_once("classes/resources/QuestionBlueprint.php");
-$questionBlueprint = new QuestionBlueprint();
+require_once("classes/resources/TempQuestion.php");
+require_once("classes/resources/User.php");
+$questionBlueprint = new TempQuestion();
 
 switch (strtolower($this->request->getMethod()))
 {
 	case 'get':
 		if ($questionBlueprint->loadFromUri($this->request->getUri()))
 		{
-			$questionBlueprint->buildXML();
-			$this->response->setPayload($questionBlueprint->getXML());
+			$questionBlueprint->buildJSON();
+			$this->response->setPayload($questionBlueprint->getJSON());
 			$this->setStatus(true);
 			break;
 		}
@@ -17,10 +18,13 @@ switch (strtolower($this->request->getMethod()))
 		break;
 	case 'put':
 	case 'post':
-		if ($questionBlueprint->loadFromPayload($this->request->getPayload()))
+        $payload = json_decode($this->request->getPayload());
+        $uriArr = explode('/',trim($this->request->getUri()));
+		if ($questionBlueprint->loadFromPayload($payload,$uriArr[4]))
 		{
-			if ($questionBlueprint->save())
+			if ($questionBlueprint->save(User::usernameToId($payload->username)))
 			{
+                $this->response->setPayload("Success.");
 				$this->setStatus(true);
 				break;
 			}
@@ -32,6 +36,7 @@ switch (strtolower($this->request->getMethod()))
 		{
 			if($questionBlueprint->delete())
 			{
+                $this->response->setPayload("Success.");
 				$this->setStatus(true);
 				break;
 			}

@@ -20,4 +20,3 @@ switch (strtolower($this->request->getMethod()))
 	case 'delete':
 		break;
 }
-?>

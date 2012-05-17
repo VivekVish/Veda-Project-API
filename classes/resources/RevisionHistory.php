@@ -29,7 +29,7 @@ Class RevisionRow
     ########################################################
 	#### Helper functions for loading object ###############
 	########################################################
-    public function loadFromUri($uri)
+    public function loadFromUri($uri,$compareTo=null)
     {
         $uri= trim($uri, "/");
         $uriArr = explode("/", $uri);
@@ -56,6 +56,15 @@ Class RevisionRow
         $this->userId = $result[0]['user_id'];
         $this->timestamp = $result[0]['revision_date'];
         $this->notes = $result[0]['user_notes'];
+        
+        if(!is_null($compareTo))
+        {
+            $comparisonRow = new RevisionRow("lesson_history","lesson");
+            $comparisonUriArr = explode("/",trim($uri, "/"));
+            array_pop($comparisonUriArr);
+            array_push($comparisonUriArr,$compareTo);
+            $comparisonRow->loadFromUri(join("/",$comparisonUriArr));
+        }
         
         return true;
     }

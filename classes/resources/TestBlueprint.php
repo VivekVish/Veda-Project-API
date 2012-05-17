@@ -1,10 +1,12 @@
 <?php
 
 require_once("classes/resources/Material.php");
+require_once("classes/resources/TempQuestion.php");
 
 class TestBlueprint {
 
-    protected $childData = null; //holds questionBlueprints, is an array
+    protected $childData = array(); //holds questionBlueprints, is an array
+    protected $testType = null;
     protected $content_type = null; //for lesson, course, or sectuo
     protected $content_id = null; //other part of unique id. [lesson][12] is the test for lesson 12, [course][12] is for course 12
     protected $number_of_questions = null; //pretty obvious
@@ -16,23 +18,38 @@ class TestBlueprint {
     #### Helper functions for loading object ###############
     ########################################################
 
-    public function loadFromUri($uri) { //grab blueprint info from db
-        //!!!!!!Make this not die on fail!!!!!!
-        //get BP by its ID
-        $uriArr = explode("/", trim($uri, "/")); //puts all the stuff like etc/foo/blah into array with {etc, foo, blah}
-        $this->id = $uriArr[4]; //index in URI for BPs
-        $this->loadFromID($this->id);
-        return true;
+    public function loadFromUri($uri) 
+    { 
+        $uriArr = explode("/", trim($uri, "/"));
+        if(count($uriArr)>=8)
+        {
+            $testType = "quiz";
+            $this->id=Material::URIToId($uri,"lesson");
+            $this->loadFromID($this->id);
+            return true;
+        }
+        else if(count($uriArr)==7)
+        {
+            $testType = "exam";
+            return true;
+        }
+        return false;
     }
 
-    public function loadFromId($id) {
-        $query = sprintf("SELECT * FROM test_blueprint WHERE id = %s", pg_escape_string($id)); //get all the stuff from the row where id=the id of the test we want
+    public function loadFromId($id) 
+    {
+        $query = sprintf("SELECT * FROM temp_questions WHERE lesson_id = %s", pg_escape_string($id)); //get all the stuff from the row where id=the id of the test we want
         $result = $GLOBALS["transaction"]->query($query); //store all the stuff from the row into an array called $results
-
-        $this->content_type = $result["content_type"];
-        $this->content_id = $reult["content_id"];
-        $this->number_of_questions = $result["number_of_questions"];
-        $this->loadChildData();
+        $this->childData = array();
+        if($result!=="none")
+        {
+            for ($i = 0; $i < sizeOf($result); $i++)
+            {
+                $question_id=$result[$i]['id'];
+                $name=$result[$i]['name'];
+                $this->childData[$result[$i]['question_order']]=array("name"=>$name,"id"=>$question_id);
+            }
+        }
     }
 
     public function loadChildData() {//stores question blueprint data into $childData
@@ -53,9 +70,8 @@ class TestBlueprint {
     
     
     public function buildJSON() {//gets data, stores it as JSON
-        $this->JSONData = json_encode(array("content_type" => $this->content_type, "content_id" => $this->content_id, "number_of_questions" => $this->number_of_questions, "child_data" => $this->childData));
-        
-        
+        //$this->JSONData = json_encode(array("content_type" => $this->content_type, "content_id" => $this->content_id, "number_of_questions" => $this->number_of_questions, "child_data" => $this->childData));
+        $this->JSONData = json_encode(array("childData"=>$this->childData));
     }
 
     public function getJSON() {//returns stored data
@@ -89,6 +105,10 @@ class TestBlueprint {
     public function getContentId() {
         return $this->content_id;
     }
+    
+    public function getChildData() {
+        return $this->childData;
+    }
 
     ########################################################
     #### Database interface functions ###############
@@ -111,6 +131,17 @@ class TestBlueprint {
         $query = sprintf("INSERT INTO test_blueprint (id, content_type, content_id, number_of_questions, revision_id) VALUES (%s, %s, %s, %s, %s)", pg_escape_string($this->id), pg_escape_string($this->content_type), pg_escape_string($this->content_id), pg_escape_string($this->number_of_questions), pg_escape_string($latest_revision_id));
         $GLOBALS['transaction']->query($query);
     }
+    
+    public function deleteUserAnswers($userId)
+    {
+        $tempQuestion = new TempQuestion();
+        foreach($this->childData as $key=>$value)
+        {
+            $tempQuestion->loadFromId($value['id']);
+            $tempQuestion->deleteUserAnswer($userId);
+        }
+        
+        return true;
+    }
 
 }
-?> 

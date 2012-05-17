@@ -56,6 +56,10 @@
                         {
                             $this->file = "image.php";
                         }
+                        else if($pathArray[1]=="material"&&$pathArray[2]=="questionBlueprint")
+                        {
+                            $this->file = "questionBlueprint.php";
+                        }
                         else if($pathArray[1]=="material")
                         {
                             $this->file = "subject.php";
@@ -116,18 +120,14 @@
                             {
                                 $this->file = "ilosByLesson.php";
                             }
-                            else if($pathArray[7]=="prequiz")
-                            {
-                                $this->file = "prequiz.php";
-                            }
-                            else if($pathArray[7]=="quiz")
-                            {
-                                $this->file = "quiz.php";
-                            }
 							else if($pathArray[7]=="position")
 							{
 								$this->file = "lessonPosition.php";
 							}
+                            else if($pathArray[7]=="quizOutline")
+                            {
+                                $this->file = "quizOutline.php";
+                            }
                         }
                         break;
                     case 9:
@@ -136,6 +136,14 @@
                             if($pathArray[7]=="content"&&$pathArray[8]=="history")
                             {
                                 $this->file = "lessonHistory.php";
+                            }
+                            else if($pathArray[7]=="prequiz")
+                            {
+                                $this->file = "prequiz.php";
+                            }
+                            else if($pathArray[7]=="quiz")
+                            {
+                                $this->file = "quiz.php";
                             }
                             else if($pathArray[7]=="content"&&$pathArray[8]=="discussion")
                             {
@@ -163,7 +171,11 @@
                     case 11:
                         if($pathArray[1]=="material")
                         {
-                            if($pathArray[8]=="discussion"&&$pathArray[9]=="history")
+                            if($pathArray[7]=="content"&&$pathArray[8]=="history")
+                            {
+                                $this->file = "lessonRevisionComparison.php";
+                            }
+                            else if($pathArray[8]=="discussion"&&$pathArray[9]=="history")
                             {
                                 $this->file = "discussionRevision.php";
                             }
@@ -180,7 +192,11 @@
                     case 12:
                         if($pathArray[1]=="material")
                         {
-                            if($pathArray[8]=="discussion"&&$pathArray[9]=="autosave")
+                            if($pathArray[8]=="discussion"&&$pathArray[9]=="history")
+                            {
+                                $this->file = "discussionRevisionComparison.php";
+                            }
+                            else if($pathArray[8]=="discussion"&&$pathArray[9]=="autosave")
                             {
                                 $this->file = "discussionAutosaveExists.php";
                             }
@@ -195,6 +211,10 @@
                         if($pathArray[1]!="username"&&$pathArray[2]=="images")
                         {
                             $this->file = "imagesByUsername.php";
+                        }
+                        else if($pathArray[1]=="question")
+                        {
+                            $this->file = "questionAnswer.php";
                         }
                         else
                         {

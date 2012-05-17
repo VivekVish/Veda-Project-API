@@ -5,7 +5,9 @@
     switch (strtolower($this->request->getMethod()))
     {
         case "get":
-            if($lessonRow->loadFromUri($this->request->getUri()))
+            $uriArr = explode("/",trim($this->request->getUri(),"/"));
+            $compareTo = array_pop($uriArr);
+            if($lessonRow->loadFromUri(join("/",$uriArr),$compareTo))
             {
                 $this->response->setPayload($lessonRow->getJSON());
                 $this->setStatus(true);

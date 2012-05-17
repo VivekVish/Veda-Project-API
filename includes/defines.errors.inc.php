@@ -114,3 +114,7 @@
     define("ERROR_112","Unable to save citation.");define("DEBUGERROR_112","Unable to save citation in Citation::save()");
     define("ERROR_113","Unable to adjust lesson order.");define("DEBUGERROR_113","Unable to record position change in move_content table in Lesson::setPosition().");
     define("ERROR_114","Unable to adjust section order.");define("DEBUGERROR_114","Unable to record position change in move_content table in Section::setPosition().");
+    define("ERROR_115","Unable to save question.");define("DEBUGERROR_115","Unable to save question in TempQuestion::save().");
+    define("ERROR_116","Unable to delete question.");define("DEBUGERROR_116","Unable to delete question in TempQuestion::delete().");
+    define("ERROR_117","Unable to submit answer.");define("DEBUGERROR_117","Unable to submit answer in TempQuestion::submitAnswer().");
+    define("ERROR_118","Unable to delete user answer.");define("DEBUGERROR_118","Unable to delete user answer in TempQuestion::deleteUserAnswer().");
