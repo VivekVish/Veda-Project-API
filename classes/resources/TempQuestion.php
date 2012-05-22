@@ -75,7 +75,7 @@ class TempQuestion
         $this->correctAnswer=$payload->correctAnswer;
         $this->name=$payload->name;
         $this->questionOrder=$payload->questionOrder;
-        $this->lessonId=Material::URIToId($payload->lessonPath);
+        $this->lessonId=Material::URIToId(urldecode($payload->lessonPath));
         $this->answerChoices=$payload->answerChoices;
         $this->loadILOsFromArray(json_decode($payload->ilos));
         return true;
