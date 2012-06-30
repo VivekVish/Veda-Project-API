@@ -50,6 +50,10 @@
                         {
                             $this->file = "citation.php";
                         }
+                        else if($pathArray[1]=="lessonplan")
+                        {
+                            $this->file = "lessonPlan.php";
+                        }
                         break;
                     case 4:
                         if($pathArray[1]=="material"&&$pathArray[2]=="uploads"&&$pathArray[3]=="image")
@@ -215,6 +219,10 @@
                         else if($pathArray[1]=="question")
                         {
                             $this->file = "questionAnswer.php";
+                        }
+                        else if($pathArray[1]=="lessonplanmanager")
+                        {
+                            $this->file = "lessonPlanManager.php";
                         }
                         else
                         {

@@ -118,3 +118,9 @@
     define("ERROR_116","Unable to delete question.");define("DEBUGERROR_116","Unable to delete question in TempQuestion::delete().");
     define("ERROR_117","Unable to submit answer.");define("DEBUGERROR_117","Unable to submit answer in TempQuestion::submitAnswer().");
     define("ERROR_118","Unable to delete user answer.");define("DEBUGERROR_118","Unable to delete user answer in TempQuestion::deleteUserAnswer().");
+    define("ERROR_119","Unable to save lesson plan.");define("DEBUGERROR_119","Unable to save lesson plan in LessonPlanManager::save().");
+    define("ERROR_120","Unable to add lesson plan tags.");define("DEBUGERROR_120","Unable to add lesson plan tags in LessonPlanManager::addTags().");
+    define("ERROR_121","Unable to get lesson plan tags.");define("DEBUGERROR_121","Unable to get lesson plan tags in LessonPlanManager::getTagsByLessonPlanId().");
+    define("ERROR_122","Unable to delete lesson plan.");define("DEBUGERROR_122","Unable to delete lesson plan in LessonPlanManager::delete().");
+    define("ERROR_123","Unable to remove lesson plan tags.");define("DEBUGERROR_123","Unable to remove lesson plan tags in LessonPlanManager::removeTagAttachments().");
+    define("ERROR_124","Unable to load lesson plan.");define("DEBUGERROR_124","Unable to load lesson plan in LessonPlanManager::loadFromId().");
