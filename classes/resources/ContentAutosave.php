@@ -2,6 +2,7 @@
 require_once("classes/resources/Material.php");
 require_once("classes/resources/User.php");
 require_once("classes/resources/Ilo.php");
+require_once("classes/resources/Content.php");
 require_once("classes/resources/Lesson.php");
 require_once("classes/resources/Discussion.php");
 require_once("classes/resources/Course.php");
@@ -196,7 +197,7 @@ class ContentAutosave extends Material
         $query = sprintf("SELECT element_id,content FROM autosave WHERE element_id='%s' AND element_type='%s' AND user_id='%s'",pg_escape_string($this->parentId),pg_escape_string($this->elementType),pg_escape_string($this->userId));
         $result = $GLOBALS['transaction']->query($query);
         
-        $ILOIds = Lesson::getILOIds($this->content);
+        $ILOIds = Content::getILOIds($this->content);
         
         if($result==="none")
         {
@@ -206,7 +207,7 @@ class ContentAutosave extends Material
         }
         else
         {
-            $oldILOIds = Lesson::getILOIds($result[0]['content']);
+            $oldILOIds = Content::getILOIds($result[0]['content']);
             $deadILOs = array_diff($oldILOIds,$ILOIds);
             
             foreach($deadILOs as $ilo)
@@ -225,7 +226,7 @@ class ContentAutosave extends Material
 			$ilo->save($this->userId,$ILOIds);
 		}
         
-        Lesson::checkILOsExist($this->ilos,$ILOIds);
+        Content::checkILOsExist($this->ilos,$ILOIds);
         $this->deleteOldEntries();
         
         $this->saveCitations();
@@ -240,18 +241,18 @@ class ContentAutosave extends Material
         {
             foreach($elementArray as $element)
             {
-                $autosavedILOIds = Lesson::getILOIds($element['content']);
+                $autosavedILOIds = Content::getILOIds($element['content']);
                 if($element['element_type']=='lesson')
                 {
                     $lesson = new Lesson();
                     $lesson->loadFromId($element['element_id']);
-                    $currentILOIds = Lesson::getILOIds($lesson->getContent());
+                    $currentILOIds = Content::getILOIds($lesson->getContent());
                 }
                 else if($element['element_type']=='discussion')
                 {
                     $discussion = new Discussion();
                     $discussion->loadFromId($element['element_id']);
-                    $currentILOIds = Lesson::getILOIds($discussion->getContent());
+                    $currentILOIds = Content::getILOIds($discussion->getContent());
                 }
                 else
                 {

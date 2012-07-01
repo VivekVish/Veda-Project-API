@@ -3,9 +3,10 @@
 require_once("classes/resources/Material.php");
 require_once("classes/resources/RevisionHistory.php");
 require_once("classes/resources/Ilo.php");
+require_once("classes/resources/Content.php");
 require_once("classes/resources/Citation.php");
 
-Class Lesson extends Material
+Class Lesson extends Content
 {
 	########################################################
 	#### Member Variables ##################################
@@ -28,6 +29,7 @@ Class Lesson extends Material
 	# Constructor
 	public function __construct()
 	{
+        parent::__construct("lesson");
 		# ILO's are not present by default
 		$this->ilosIntact = false;
 	}
@@ -40,62 +42,23 @@ Class Lesson extends Material
 	# Load from path
 	public function loadFromUri($uri,$dieOnFail=true)
 	{
-		if (!empty($uri))
-		{
-            $this->id = parent::URIToId($uri,"lesson");
-            $this->path = $uri;
-            
-            if($this->loadFromId($this->id,$dieOnFail))
-            {
-                return true;
-            }
-		}
-		return false;
+		return parent::loadFromUri($uri,$dieOnFail);
 	}
 
 	# Load object vars from payload
 	public function loadFromPayload($payload,$path)
 	{
-		try
-		{             
-            if(isset($payload->content))
-            {
-                $content = html_entity_decode($payload->content);
-                require_once("includes/htmlpurifier.php");
-                $content = $purifier->purify($content);
-            }
-            else
-            {
-                $content = "<section></section>";
-            }
-            
-            if(preg_match('/<script/',$content)>0)
-            {
-                Error::generateError(35,"Content: {$content}.");
-            }
-            
-            $uri= trim($path, "/");
-			$uriArr = explode("/", $uri);
-            
-            $this->parentId = parent::URIToId($path,"section");
-            $this->id = parent::URIToId($path,"lesson");
-            
-			$this->name = urldecode($uriArr[LESSON_INDEX]);
-			$this->description = (string)$payload->description;
-			$this->content = $content;
-			$this->active = ((string)$payload->active == "true") ? true : false;
-            $this->userId = User::usernameToId($payload->username);
-            $this->path=$path;
-			$this->loadILOsFromArray(json_decode($payload->ilos));
-            $this->loadCitationsFromArray(json_decode($payload->citations));
-			$this->ilosIntact = true;
-			return true;
-		}
-		catch (Exception $e)
-		{
-            Error::generateError(36, "Content: $content");
-			return false;
-		}
+        $uri= trim($path, "/");
+        $uriArr = explode("/", $uri);
+
+        $this->parentId = parent::URIToId($path,"section");
+        $this->id = parent::URIToId($path,"lesson");
+
+        $this->name = urldecode($uriArr[LESSON_INDEX]);
+        $this->description = (string)$payload->description;
+        $this->active = ((string)$payload->active == "true") ? true : false;
+        
+		return parent::loadFromPayload($payload, $path);
 	}
     
     public function loadFromId($id,$dieOnFail=true)
@@ -140,15 +103,7 @@ Class Lesson extends Material
                            "active"=>($this->active) ? "true" : "false");
         $this->json = json_encode($jsonarray);
     }
-
-	# Build xml
-	public function buildXML()
-	{
-		$this->xml = "<lesson><id>{$this->id}</id><parentId>{$this->parentId}</parentId><name>{$this->name}</name><description>{$this->description}</description><content>".htmlentities($this->content)."</content>";
-		$this->xml .= ($this->active) ? "<active>true</active>" : "<active>false</active>";
-		$this->xml .= "</lesson>";
-	}
-
+    
 	########################################################
 	#### Database interface functions ######################
 	########################################################
@@ -158,7 +113,7 @@ Class Lesson extends Material
 	{
 		if (!empty($this->parentId) && !empty($this->name) && !empty($this->content)) 
 		{
-            $newILOIds = Lesson::getILOIds($this->content);
+            $newILOIds = Content::getILOIds($this->content);
             $oldILOIds = array();
             
 			# Update existing lesson
@@ -166,7 +121,7 @@ Class Lesson extends Material
 			{
                 $query = sprintf("SELECT content FROM lesson WHERE id='%s'",pg_escape_string($this->id));
                 $result = $GLOBALS['transaction']->query($query);
-                $oldILOIds = Lesson::getILOIds($result[0]['content']);
+                $oldILOIds = Content::getILOIds($result[0]['content']);
                 $query = sprintf("UPDATE lesson SET section_id = '%s', name = '%s', content = '%s' WHERE id='%s'", 
                         pg_escape_string($this->parentId),
                         pg_escape_string($this->name),
@@ -208,7 +163,7 @@ Class Lesson extends Material
             $revisionRow->loadFromData(null,$this->id,$this->name,$this->content,$userId,null);
             $revisionRow->save();
 
-            $this->checkILOsExist($this->ilos,$newILOIds);
+            Content::checkILOsExist($this->ilos,$newILOIds);
             $this->saveIlos($userId,$newILOIds,$oldILOIds);
             
             $this->saveCitations();
@@ -221,9 +176,9 @@ Class Lesson extends Material
 	} 
     
 	# Removes lesson from database
-	public function delete($user_id)
+	public function delete($user_id=null)
 	{
-        $deadILOs = Lesson::getILOIds($this->content);
+        $deadILOs = Content::getILOIds($this->content);
         
         foreach($deadILOs as $ilo)
         {
@@ -269,15 +224,6 @@ Class Lesson extends Material
 		# Failure
 		return false;
 	}
-
-	# Marks lesson inactive
-	public function disable()
-	{
-		$this->active = false;
-		$this->save();
-	}
-
-	
 
 	# Set Position
 	public function setPosition($newPath,$newOrder,$oldPath,$userId)
@@ -450,7 +396,7 @@ Class Lesson extends Material
             
 			$GLOBALS['transaction']->query($query,50);
             
-            $resurrectILOs = Lesson::getILOIds($recoveredLessonContents['content']);
+            $resurrectILOs = Content::getILOIds($recoveredLessonContents['content']);
         
             foreach($resurrectILOs as $ilo)
             {
@@ -468,232 +414,6 @@ Class Lesson extends Material
         }
         
         return $successful_recoveries;
-    }
-
-	########################################################
-	#### Functions for working with ILO's ##################
-	########################################################
-    
-    public static function getILOIds($html)
-    {
-        require_once('includes/html5lib/Parser.php');
-        $dom = HTML5_Parser::parse(html_entity_decode(stripslashes("<html>".$html."</html>")));
-        $xmlContent = new SimpleXMLElement($dom->saveXml());
-        $iloPlaceHolderArray = $xmlContent->xpath("//*[starts-with(@id,'ilo')]");
-        $iloIds = array();
-
-        foreach($iloPlaceHolderArray as $placeholder)
-        {
-            array_push($iloIds, preg_replace("/ilo/","",(string)$placeholder->attributes()->id));
-        }
-
-        return $iloIds;
-    }
-
-	# Load's array of ILO's from DB or from content
-	public function loadIlos()
-	{
-		$this->ilos = array();
-		$contentXML = new SimpleXMLElement("<parent>".$this->content."</parent>");
-		$iloArray = $contentXML->xpath('//*[@data-ilotype]');
-		foreach($iloArray as $index => $iloElement)
-		{
-			foreach($iloElement->attributes() as $name=>$value)
-			{
-				if($name=="id")
-				{
-					$id = preg_replace('/ilo/',"",$value);
-					$this->ilos[$id] = new Ilo($id, null, null);
-				}
-			}	
-		}
-
-		if(!empty($this->ilos))
-		{
-			return true;
-		}
-
-		return false;
-	}
-    
-    # Load ILOs from Array
-    public function loadILOsFromArray($ArrayOfILOs)
-    {
-		if(sizeof($ArrayOfILOs)>0)
-		{
-        	foreach ($ArrayOfILOs as $ndx => $ilo)
-			{
-				$tmp[$ndx] = $ilo;
-			}
-       		return $this->setILOs($tmp);
-		}
-		
-		return;
-    }
-    
-    # Ensures that ILOs in HTML exist as submitted JSON
-    public static function checkILOsExist($submittedILOs,$newILOIds)
-    {
-        $jsonILOIds = array();
-        foreach($submittedILOs as $iloId=>$iloContent)
-        {
-            array_push($jsonILOIds,$iloId);
-        }
-        
-        $missingILOs = array_diff($newILOIds,$jsonILOIds);
-        
-        foreach($missingILOs as $iloId)
-        {
-            $ilo = new Ilo();
-            if(!$ilo->loadById($iloId))
-            {
-                Error::generateError(107);
-            }
-        }
-    }
-    
-    # Save's ilo's to DB
-	public function saveIlos($userId,$newILOIds,$oldILOIds)
-	{
-        $deadILOs = array_diff($oldILOIds,$newILOIds);
-        
-        foreach($deadILOs as $ilo)
-        {
-            Ilo::killIlo($ilo);
-        }
-        
-		foreach($this->ilos as $ilo)
-		{
-			$ilo->save($userId,$newILOIds);
-		}
-	}
-    
-    public function setILOs($ilos)
-	{
-		# Kill old ilos
-		unset($this->ilos);
-
-		# Setup pattern for type extraction
-		foreach ($ilos as $id => $ilo)
-		{
-            $type= $ilo->type;
-            $id = substr($id, 3);
-            $content = json_encode($ilo);
-            $this->ilos[$id] = new Ilo($id, $content, $type);
-		}
-		return true;
-	}
-    
-    ########################################################
-	#### Functions for working with Citations ##############
-	########################################################
-    public function loadCitationsFromArray($ArrayOfCitations)
-    {
-        if(sizeof($ArrayOfCitations)>0)
-		{
-        	foreach ($ArrayOfCitations as $ndx => $ilo)
-			{
-				$tmp[$ndx] = $ilo;
-			}
-       		return $this->setCitations($tmp);
-		}
-		
-		return;
-    }
-    
-    public function setCitations($citations)
-    {
-        # Kill old ilos
-		unset($this->citations);
-
-		# Setup pattern for type extraction
-		foreach ($citations as $id => $citation)
-		{
-            $id = substr($id, 8);
-            $this->citations[$id] = new Citation();
-            $payload = array("user_id"=>$this->userId,"course_id"=>Material::URIToId($this->path,"course"),"citation"=>$citation,"id"=>$id);
-            $this->citations[$id]->loadFromPayload($payload);
-		}
-		return true;
-    }
-    
-    public function saveCitations()
-    {
-        foreach($this->citations as $citation)
-		{
-			$citation->save();
-		}
-    }
-    
-	########################################################
-	### Getters and Setters ################################
-	########################################################
-
-	# Set content 
-	public function setContent($content)
-	{
-		$this->content = $content;
-	}
-
-	# Set course
-	public function setSection($parentId)
-	{
-		$this->parentId = $parentId;
-	}
-
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
-
-	public function setPath($path)
-	{
-		$this->path = $path;
-	}
-        
-    public function setLessonOrder($order)
-    {
-        $this->order = $order;
-    }
-    
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	public function getContent()
-	{
-		return $this->content;
-	}
-
-	public function getSection()
-	{
-		return $this->parentId;
-	}
-
-	public function getILOs()
-	{
-		return $this->ilos;
-	}
-    
-    public function getJSON()
-    {
-        return $this->json;
-    }
-
-	public function getXML()
-	{
-		return $this->xml;
-	}
-        
-	public function getPath()
-	{
-		return $this->path;
-	}
-    
-    public function getLessonOrder()
-    {
-        return $this->order;
     }
 }
 

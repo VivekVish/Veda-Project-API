@@ -124,3 +124,5 @@
     define("ERROR_122","Unable to delete lesson plan.");define("DEBUGERROR_122","Unable to delete lesson plan in LessonPlanManager::delete().");
     define("ERROR_123","Unable to remove lesson plan tags.");define("DEBUGERROR_123","Unable to remove lesson plan tags in LessonPlanManager::removeTagAttachments().");
     define("ERROR_124","Unable to load lesson plan.");define("DEBUGERROR_124","Unable to load lesson plan in LessonPlanManager::loadFromId().");
+    define("ERROR_125","Unable to save content.");define("DEBUGERROR_125","Unable to load content from payload in Content::loadFromPayload() since it contains scripts.");
+    define("ERROR_126","Unable to load content.");define("DEBUGERROR_126","Unable to load content from Id in Content::loadFromId().");
