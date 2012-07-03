@@ -8,8 +8,8 @@ switch (strtolower($this->request->getMethod()))
 {
 	case 'get':
 		$section->loadFromUri($this->request->getUri());
-		$section->buildXML();
-		$payload = $section->getXML();
+		$section->buildJSON();
+		$payload = $section->getJSON();
 		if (!empty($payload))
 		{
 			$this->response->setPayload($payload);

@@ -14,14 +14,6 @@ Class Discussion extends Content
 
     protected $elementId = null;
     protected $elementType = null;
-    protected $name = null;
-	protected $content = null;
-	protected $ilos = array();
-    protected $citations = array();
-	protected $ilosIntact = null;
-    protected $json = null;
-    protected $notes = null;
-    protected $userId = null;
     
 	########################################################
 	#### Constructor and main function #####################

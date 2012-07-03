@@ -7,8 +7,8 @@
         protected $id = null;
         protected $parentId = null;
         protected $childIds = null;
-        protected $childData = null;
-        protected $xml = null;
+        protected $childData = array();
+        protected $json = null;
         protected $description = null;
         protected $name = null;
         protected $active = null;
@@ -131,5 +131,10 @@
 				return null;
 			}
 		}
+        
+        public function getJSON()
+        {
+            return $this->json;
+        }
 	}
 ?>

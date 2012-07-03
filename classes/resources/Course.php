@@ -111,7 +111,7 @@ Class Course extends Material
                                                 "name" => $name, 
                                                 "description" => $row['description'], 
                                                 "path" => $path,
-                                                "sectionOrder" => $row['section_order']);
+                                                "order" => $row['section_order']);
                 }
             }
             return true;
@@ -122,26 +122,14 @@ Class Course extends Material
 	########################################################
 	#### Client interface functions   ######################
 	########################################################
+    
+    public function buildJSON()
+    {
+        $this->loadChildData();
+        $jsonArray =array("id"=>$this->id,"parentId"=>$this->parentId,"name"=>$this->name,"description"=>$this->description,"path"=>$this->path,"active"=>$this->active,"children"=>$this->childData);
+        $this->json = json_encode($jsonArray);
+    }
 	
-	# Build XML
-	public function buildXML()
-	{
-		$this->loadChildData();
-		$this->xml = "<course><id>{$this->id}</id><subjectid>{$this->parentId}</subjectid><name>{$this->name}</name><description>{$this->description}</description><path>{$this->path}</path>";
-		$this->xml .= ($this->active) ? "<active>true</active>" : "<active>false</active>";
-		if (!empty($this->childData))
-		{
-			$this->xml .= "<sections>";
-			foreach ($this->childData as $child)
-			{
-				$this->xml .= "<section><id>{$child['id']}</id><name>{$child['name']}</name><description>{$child['description']}</description><path>{$child['path']}</path><order>{$child['sectionOrder']}</order></section>";
-			}
-			$this->xml .= "</sections>";
-		}
-		$this->xml .= "</course>";
-	}
-	
-
 	########################################################
 	#### Database interface functions ######################
 	########################################################
@@ -196,8 +184,5 @@ Class Course extends Material
 	### Getters and Setters ################################
 	########################################################
 
-	public function getXML()
-	{
-		return $this->xml;
-	}
+	
 }

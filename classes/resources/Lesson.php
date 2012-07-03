@@ -8,19 +8,6 @@ require_once("classes/resources/Citation.php");
 
 Class Lesson extends Content
 {
-	########################################################
-	#### Member Variables ##################################
-	########################################################
-
-	protected $parentId = null;
-	protected $content = null;
-	protected $ilos = array();
-    protected $citations = array();
-	protected $ilosIntact = null;
-    protected $order = null;
-    protected $json = null;
-    protected $notes = null;
-    protected $userId = null;
     
 	########################################################
 	#### Constructor and main function #####################
@@ -98,10 +85,10 @@ Class Lesson extends Content
     
     public function buildJSON()
     {
-        $jsonarray = array("id"=>($this->id),"parentId"=>($this->parentId),"name"=>($this->name),
+        $jsonArray = array("id"=>($this->id),"parentId"=>($this->parentId),"name"=>($this->name),
                            "description"=>($this->description),"content"=>htmlentities($this->content),
                            "active"=>($this->active) ? "true" : "false");
-        $this->json = json_encode($jsonarray);
+        $this->json = json_encode($jsonArray);
     }
     
 	########################################################

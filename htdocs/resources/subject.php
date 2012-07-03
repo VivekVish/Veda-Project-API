@@ -8,8 +8,8 @@ switch (strtolower($this->request->getMethod()))
 	case 'get':
 		$subject->loadFromUri($this->request->getUri());
 		$subject->loadChildrenIds();
-		$subject->buildXML();
-		$this->response->setPayload($subject->getXML());
+		$subject->buildJSON();
+		$this->response->setPayload($subject->getJSON());
 		$this->setStatus(true);
 		break;
 	case 'put':

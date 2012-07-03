@@ -8,9 +8,8 @@ switch (strtolower($this->request->getMethod()))
 {
 	case 'get':
 		$field->loadFromUri($this->request->getURI());
-        $field->buildXML();
-		$this->response->setPayload($field->getXML());	
-		$this->response->setContentType("Text/XML");
+        $field->buildJSON();
+		$this->response->setPayload($field->getJSON());	
 		$this->setStatus(true);
 		break;
 	case 'put':

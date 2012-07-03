@@ -121,7 +121,7 @@ Class Section extends Material
                 {
                     $path = "/data/material/{$row['field_name']}/{$row['subject_name']}/{$row['course_name']}/{$row['section_name']}/{$row['name']}/content/";
                     $name = str_replace("_", " ", $row['name']);
-                    $this->childData[] = array("id" => $row['id'], "name" => $name, "description" => $row['description'], "path" => $path, "lessonOrder" => $row['lesson_order']);
+                    $this->childData[] = array("id" => $row['id'], "name" => $name, "description" => $row['description'], "path" => $path, "order" => $row['lesson_order']);
                 }
             }
             else
@@ -137,23 +137,12 @@ Class Section extends Material
 	#### User interface functions ##########################
 	########################################################
 
-	# Builds XML representation of object
-	public function buildXML()
-	{
-		$this->loadChildData();
-		$this->xml = "<section><id>{$this->id}</id><courseid>{$this->parentId}</courseid><name>{$this->name}</name><description>{$this->description}</description><path>{$this->path}</path><order>{$this->order}</order>";
-		$this->xml .= ($this->active) ? "<active>true</active>" : "<active>false</active>";
-		if (!empty($this->childData))
-		{
-			$this->xml .= "<lessons>";
-			foreach ($this->childData as $child)
-			{
-				$this->xml .= "<lesson><id>{$child['id']}</id><name>{$child['name']}</name><description>{$child['description']}</description><path>{$child['path']}</path><order>{$child['lessonOrder']}</order></lesson>";
-			}
-			$this->xml .= "</lessons>";
-		}
-		$this->xml .= "</section>";
-	}
+    public function buildJSON()
+    {
+        $this->loadChildData();
+        $jsonArray =array("id"=>$this->id,"parentId"=>$this->parentId,"name"=>$this->name,"description"=>$this->description,"path"=>$this->path,"order"=>$this->order,"active"=>$this->active,"children"=>$this->childData);
+        $this->json = json_encode($jsonArray);
+    }
 
 
 	########################################################
@@ -308,8 +297,8 @@ Class Section extends Material
 	### Getters and Setters ################################
 	########################################################
 
-	public function getXML()
+	public function getJSON()
 	{
-		return $this->xml;
+		return $this->json;
 	}
 }

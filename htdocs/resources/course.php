@@ -8,8 +8,8 @@ switch (strtolower($this->request->getMethod()))
 	case 'get':
 		if ($course->loadFromUri($this->request->getUri()))
 		{
-			$course->buildXML();
-			$this->response->setPayload($course->getXML());
+			$course->buildJSON();
+			$this->response->setPayload($course->getJSON());
 			$this->setStatus(true);
 			break;
 		}

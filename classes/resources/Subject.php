@@ -114,24 +114,12 @@ Class Subject extends Material
 	#### User interface functions ##########################
 	########################################################
 
-	# Builds XML representation of object
-	public function buildXML()
-	{
-		$this->loadChildData();
-		$this->xml = "<subject><id>{$this->id}</id><parentId>{$this->parentId}</parentId><name>{$this->name}</name><description>{$this->description}</description><path>{$this->path}</path>";
-		$this->xml .= ($this->active) ? "<active>true</active>" : "<active>false</active>";
-		if (!empty($this->childData))
-		{
-			$this->xml .= "<courses>";
-			foreach ($this->childData as $child)
-			{
-				$this->xml .= "<course><id>{$child['id']}</id><name>{$child['name']}</name><description>{$child['description']}</description><path>{$child['path']}</path></course>";
-			}
-			$this->xml .= "</courses>";
-		}
-		$this->xml .= "</subject>";
-	}
-
+    public function buildJSON()
+    {
+        $this->loadChildData();
+        $jsonArray =array("id"=>$this->id,"parentId"=>$this->parentId,"name"=>$this->name,"description"=>$this->description,"path"=>$this->path,"active"=>$this->active,"children"=>$this->childData);
+        $this->json = json_encode($jsonArray);
+    }
 
 	########################################################
 	#### Database interface functions ######################
@@ -169,7 +157,6 @@ Class Subject extends Material
             return true;
 		}
 	}
-
 
 	########################################################
 	### Getters and Setters ################################
@@ -213,10 +200,5 @@ Class Subject extends Material
 	public function getName()
 	{
 		return $this->name;
-	}
-
-	public function getXML()
-	{
-		return $this->xml;
 	}
 }

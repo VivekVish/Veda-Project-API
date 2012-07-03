@@ -60,29 +60,36 @@ Class Field extends Material
         $this->description = $row['description'];
         $this->active = ($row['active']) ? true : false;
 	}
+    
+    public function loadChildData()
+	{
+		if (!empty($this->id))
+		{
+			$field_uri_name = str_replace(" ", "_", $this->name);
+			$query = sprintf("SELECT * FROM subject WHERE field_id = %s AND active IS TRUE", pg_escape_string($this->id));
+			$result = $GLOBALS['transaction']->query($query);
+            
+            foreach($result as $row)
+            {
+                $path = "/data/material/$field_uri_name/{$row['name']}/";
+                $name = str_replace("_", " ", $row['name']);
+                $this->childData[] = array("id" => $row['id'], "name" => $name, "description" => $row['description'], "path" => $path);
+            }	
+            return true;
+		}	
+		return false;
+	}
 
 	########################################################
 	#### Display Functions #################################
 	########################################################
-
-	public function buildXML()
-	{
-		$this->loadChildData();
-		$this->xml = "<field><id>{$this->id}</id><name>{$this->name}</name><description>{$this->description}</description><path>{$this->path}</path><active>";
-		$this->xml .= ($this->active) ? "true" : "false";
-		$this->xml .= "</active>";
-		if (!empty($this->childData))
-		{
-			$this->xml .= "<subjects>";
-			foreach($this->childData as $child)
-			{
-				$this->xml .= "<subject><id>{$child['id']}</id><name>{$child['name']}</name><description>{$child['description']}</description><path>{$child['path']}</path></subject>";
-			}
-			$this->xml .= "</subjects>";
-		}
-		$this->xml .= "</field>";
-	}
-
+    
+    public function buildJSON()
+    {
+        $this->loadChildData();
+        $jsonArray =array("id"=>$this->id,"name"=>$this->name,"description"=>$this->description,"path"=>$this->path,"active"=>$this->active,"children"=>$this->childData);
+        $this->json = json_encode($jsonArray);
+    }
 
 	########################################################
 	#### Database interface functions ######################
@@ -145,33 +152,5 @@ Class Field extends Material
 	public function getId()
 	{
 		return $this->id;
-	}
-
-	public function getXML()
-	{
-		return $this->xml;
-	}
-
-	########################################################
-	### Children ###########################################
-	########################################################
-
-	public function loadChildData()
-	{
-		if (!empty($this->id))
-		{
-			$field_uri_name = str_replace(" ", "_", $this->name);
-			$query = sprintf("SELECT * FROM subject WHERE field_id = %s AND active IS TRUE", pg_escape_string($this->id));
-			$result = $GLOBALS['transaction']->query($query);
-            
-            foreach($result as $row)
-            {
-                $path = "/data/material/$field_uri_name/{$row['name']}/";
-                $name = str_replace("_", " ", $row['name']);
-                $this->childData[] = array("id" => $row['id'], "name" => $name, "description" => $row['description'], "path" => $path);
-            }	
-            return true;
-		}	
-		return false;
 	}
 }
