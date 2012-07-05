@@ -7,7 +7,6 @@ class LessonAddition
 {
     protected $type = null;
     protected $additionObject = null;
-    protected $json = null;
     
     # Constructor
 	public function __construct($type)

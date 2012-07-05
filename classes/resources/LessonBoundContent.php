@@ -58,7 +58,7 @@ class LessonBoundContent extends Content
     public function buildJSON()
     {
         $jsonArray = array("id"=>$this->id,"type"=>"content","content"=>$this->content,"name"=>$this->name);
-        return json_encode($jsonArray);
+        $this->json = json_encode($jsonArray);
     }
     
     ########################################################
