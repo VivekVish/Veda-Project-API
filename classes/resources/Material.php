@@ -108,6 +108,15 @@
                                     pg_escape_string($uriArr[FIELD_INDEX]));
                     
                     break;
+                case "additions":
+                    $query = sprintf("SELECT id FROM lesson_additions WHERE name='%s' AND lesson_id=(SELECT id FROM lesson WHERE name='%s' AND section_id=(SELECT id FROM section WHERE name='%s' AND course_id=(SELECT id FROM course WHERE name='%s' AND subject_id=(SELECT id FROM subject WHERE name='%s' AND field_id=(SELECT id FROM field WHERE name ='%s')))))",
+									pg_escape_string($uriArr[LESSON_ADDITION_INDEX]),
+                                    pg_escape_string($uriArr[LESSON_INDEX]),
+									pg_escape_string($uriArr[SECTION_INDEX]),
+                                    pg_escape_string($uriArr[COURSE_INDEX]),
+                                    pg_escape_string($uriArr[SUBJECT_INDEX]),
+                                    pg_escape_string($uriArr[FIELD_INDEX]));
+                    break;
                 default:
                     Error::generateError(62,"URI: $uri");
                     break;

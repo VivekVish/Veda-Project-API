@@ -126,3 +126,9 @@
     define("ERROR_124","Unable to load lesson plan.");define("DEBUGERROR_124","Unable to load lesson plan in LessonPlanManager::loadFromId().");
     define("ERROR_125","Unable to save content.");define("DEBUGERROR_125","Unable to load content from payload in Content::loadFromPayload() since it contains scripts.");
     define("ERROR_126","Unable to load content.");define("DEBUGERROR_126","Unable to load content from Id in Content::loadFromId().");
+    define("ERROR_127","Unable to save lesson addition content.");define("DEBUGERROR_127","Unable to save lesson addition content in LessonBoundContent::save().");
+    define("ERROR_128","Unable to delete lesson addition content.");define("DEBUGERROR_128","Unable to delete lesson addition content in LessonBoundContent::delete().");
+    define("ERROR_129","Unable to load video.");define("DEBUGERROR_129","Unable to load video from URI in Video::loadFromUri().");
+    define("ERROR_130","Unable to load video.");define("DEBUGERROR_130","Unable to load video from URI in Video::loadFromId().");
+    define("ERROR_131","Unable to save video.");define("DEBUGERROR_131","Unable to save video in Video::save().");
+    define("ERROR_132","Unable to delete video.");define("DEBUGERROR_132","Unable to delete video in Video::delete().");

@@ -8,6 +8,7 @@ define("COURSE_INDEX", 4);
 define("SECTION_INDEX", 5);
 define("LESSON_INDEX", 6);
 define("CONTENT_TYPE_INDEX", 7);
+define("LESSON_ADDITION_INDEX", 8);
 define("RESOURCE_ID", 9);
 define("DEBUGON",true);
 

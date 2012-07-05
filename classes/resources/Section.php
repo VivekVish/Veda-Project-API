@@ -121,7 +121,20 @@ Class Section extends Material
                 {
                     $path = "/data/material/{$row['field_name']}/{$row['subject_name']}/{$row['course_name']}/{$row['section_name']}/{$row['name']}/content/";
                     $name = str_replace("_", " ", $row['name']);
-                    $this->childData[] = array("id" => $row['id'], "name" => $name, "description" => $row['description'], "path" => $path, "order" => $row['lesson_order']);
+                    
+                    $query = sprintf("SELECT name FROM lesson_additions WHERE lesson_id=%s",pg_escape_string($row['id']));
+                    $lessonAdditionResult = $GLOBALS['transaction']->query($query);
+                    $lessonAdditions = array();
+                    
+                    if($lessonAdditionResult!="none")
+                    {
+                        foreach($lessonAdditionResult as $lessonAdditionRow)
+                        {
+                            array_push($lessonAdditions,$lessonAdditionRow['name']);
+                        }
+                    }
+                    
+                    $this->childData[] = array("id" => $row['id'], "name" => $name, "description" => $row['description'], "path" => $path, "order" => $row['lesson_order'], "lessonAdditions" => $lessonAdditions);
                 }
             }
             else

@@ -132,6 +132,10 @@
                             {
                                 $this->file = "quizOutline.php";
                             }
+                            else if($pathArray[7]=="lessonAdditions")
+                            {
+                                $this->file = "lessonAdditionsByLesson.php";
+                            }
                         }
                         break;
                     case 9:
@@ -153,6 +157,10 @@
                             {
                                 $this->file = "discussion.php";
                             }
+                            else if($pathArray[7]=="lessonAdditions")
+                            {
+                                $this->file = "lessonAddition.php";
+                            }
                         }
                         break;
                     case 10:
@@ -169,6 +177,10 @@
                             else if($pathArray[7]=="content"&&$pathArray[8]=="autosave")
                             {
                                 $this->file = "lessonAutosave.php";
+                            }
+                            else if($pathArray[7]=="lessonAdditions")
+                            {
+                                $this->file = "lessonAddition.php";
                             }
                         }
                         break;
