@@ -3,8 +3,6 @@
     require_once("classes/resources/Image.php");
     $image = new Image();
     
-   
-    
     switch (strtolower($this->request->getMethod()))
     {
         case 'get':

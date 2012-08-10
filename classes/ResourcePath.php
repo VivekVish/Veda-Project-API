@@ -68,6 +68,10 @@
                         {
                             $this->file = "subject.php";
                         }
+                        else if($pathArray[1]=="lessonplan")
+                        {
+                            $this->file = "lessonPlanSection.php";
+                        }
                         break;
                     case 5:
                         if($pathArray[1]=="material"&&$pathArray[2]=="uploads"&&$pathArray[3]=="image")
@@ -77,6 +81,10 @@
                         else if($pathArray[1]=="material")
                         {
                             $this->file = "course.php";
+                        }
+                        else if($pathArray[1]=="lessonplan"&&$pathArray[4]=="position")
+                        {
+                            $this->file = "lessonPlanSectionPosition.php";
                         }
                         break;
                     case 6:

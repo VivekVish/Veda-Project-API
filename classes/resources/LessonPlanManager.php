@@ -9,6 +9,8 @@ class LessonPlanManager
     protected $name = null;
     protected $tags = array();
     protected $notes = null;
+    protected $json = null;
+    protected $childData = array();
     
     ########################################################
 	#### Constructor #######################################
@@ -67,6 +69,27 @@ class LessonPlanManager
         $this->tags=$payload->tags;
         $this->notes=$payload->notes;
                 
+        return true;
+    }
+    
+    public function loadChildData()
+    {
+        $query = sprintf("SELECT lesson_plan_section.id AS id, lesson_plan_section.name AS name, section_order FROM lesson_plan_section LEFT JOIN lesson_plan ON lesson_plan.id=lesson_plan_id WHERE lesson_plan_id=%s ORDER BY section_order",$this->id);
+        $result = $GLOBALS['transaction']->query($query);
+        
+        if($result!="none")
+        {
+            foreach($result as $row)
+            {
+                $this->childData[] = array("name"=>preg_replace('/_/',' ',$row['name']),"path"=>"/data/lessonplan/{$this->id}/".$row['name']."/","id"=>$row['id'],"order"=>$row['section_order']);
+            }
+        }
+    }
+    
+    public function buildJSON()
+    {
+        $this->loadChildData();
+        $this->json=json_encode(array("name"=>$this->name,"tags"=>$this->tags,"notes"=>$this->notes,"id"=>$this->id,"children"=>$this->childData));
         return true;
     }
     
@@ -224,10 +247,41 @@ class LessonPlanManager
     }
     
     ########################################################
+	#### Section Interactions ##############################
+	########################################################
+    public function addSection($name)
+    {
+        if($this->id!="")
+        {
+            $query = sprintf("SELECT MAX(section_order) FROM lesson_plan_section WHERE lesson_plan_id=%s",$this->id);
+            $result = $GLOBALS['transaction']->query($query);
+            if($result=="none")
+            {
+                $order = 1;
+            }
+            else
+            {
+                $order = $result[0]['max'];
+            }
+            
+            $query = sprintf("INSERT INTO lesson_plan_section (name,lesson_plan_id,section_order) VALUES ('%s',%s,%s)",pg_escape_string($name),pg_escape_string($this->id),pg_escape_string($order));
+            $result = $GLOBALS['transaction']->query($query,133);
+            return true;
+        }
+        
+        return false;
+    }
+    
+    ########################################################
 	#### Getters and Setters ###############################
 	########################################################
     public function getId()
     {
         return $this->id;
+    }
+    
+    public function getJSON()
+    {
+        return $this->json;
     }
 }

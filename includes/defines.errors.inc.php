@@ -132,3 +132,9 @@
     define("ERROR_130","Unable to load video.");define("DEBUGERROR_130","Unable to load video from URI in Video::loadFromId().");
     define("ERROR_131","Unable to save video.");define("DEBUGERROR_131","Unable to save video in Video::save().");
     define("ERROR_132","Unable to delete video.");define("DEBUGERROR_132","Unable to delete video in Video::delete().");
+    define("ERROR_133","Unable to create new lesson plan section.");define("DEBUGERROR_133","Unable to create new lesson plan section in LessonPlanManager::addSection().");
+    define("ERROR_134","Unable to load lesson plan section.");define("DEBUGERROR_134","Unable to load lesson plan section in LessonPlanSection::loadFromId().");
+    define("ERROR_135","Unable to load lesson plan section.");define("DEBUGERROR_135","Unable to load lesson plan section in LessonPlanSection::loadFromUri().");
+    define("ERROR_136","Unable to save lesson plan section.");define("DEBUGERROR_136","Unable to save lesson plan section in LessonPlanSection::save().");
+    define("ERROR_137","Unable to delete lesson plan section.");define("DEBUGERROR_137","Unable to delete lesson plan section in LessonPlanSection::delete().");
+    define("ERROR_138","Unable to move lesson plan section.");define("DEBUGERROR_138","Unable to move lesson plan section in LessonPlanSection::setPosition().");
