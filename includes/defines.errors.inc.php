@@ -138,3 +138,10 @@
     define("ERROR_136","Unable to save lesson plan section.");define("DEBUGERROR_136","Unable to save lesson plan section in LessonPlanSection::save().");
     define("ERROR_137","Unable to delete lesson plan section.");define("DEBUGERROR_137","Unable to delete lesson plan section in LessonPlanSection::delete().");
     define("ERROR_138","Unable to move lesson plan section.");define("DEBUGERROR_138","Unable to move lesson plan section in LessonPlanSection::setPosition().");
+    define("ERROR_139","Unable to save lesson plan lesson.");define("DEBUGERROR_139","Unable to save lesson plan lesson in LessonPlanLesson::save().");
+    define("ERROR_140","Unable to save lesson plan lesson.");define("DEBUGERROR_140","Unable to load lesson plan lesson from payload in LessonPlanLesson::loadFromPayload().");
+    define("ERROR_141","Unable to delete section, since it still contains lessons.");define("DEBUGERROR_141","Unable to delete lesson plan section, since it still contains lessons.");
+    define("ERROR_142","Unable to load lesson.");define("DEBUGERROR_142","Unable to load lesson in LessonPlanLesson::loadFromUri().");
+    define("ERROR_143","Unable to move lesson plan lesson.");define("DEBUGERROR_143","Unable to move lesson plan lesson in LessonPlanLesson::setPosition().");
+    define("ERROR_144","Unable to delete lesson plan lesson.");define("DEBUGERROR_144","Unable to delete lesson plan lesson in LessonPlanLesson::delete().");
+    define("ERROR_145","Unable to delete lesson plan lesson addition.");define("DEBUGERROR_145","Unable to delete lesson plan lesson addition in LessonPlanLesson::dropAddition().");

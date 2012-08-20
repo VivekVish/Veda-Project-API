@@ -81,7 +81,48 @@ class LessonPlanManager
         {
             foreach($result as $row)
             {
-                $this->childData[] = array("name"=>preg_replace('/_/',' ',$row['name']),"path"=>"/data/lessonplan/{$this->id}/".$row['name']."/","id"=>$row['id'],"order"=>$row['section_order']);
+                $query = sprintf("SELECT
+                                    lesson_plan_lesson.id AS id,
+                                    lesson_plan_lesson.lesson_order AS order,
+                                    lesson.name AS lesson,
+                                    section.name AS section,
+                                    course.name AS course,
+                                    subject.name AS subject,
+                                    field.name AS field
+                                  FROM
+                                    lesson_plan_lesson
+                                    LEFT JOIN lesson ON (lesson_plan_lesson.lesson_id = lesson.id)
+                                    LEFT JOIN section ON (lesson.section_id = section.id)
+                                    LEFT JOIN course ON (section.course_id = course.id)
+                                    LEFT JOIN subject ON (course.subject_id = subject.id)
+                                    LEFT JOIN field ON (subject.field_id = field.id)
+                                  WHERE
+                                    lesson_plan_lesson.section_id=%s ORDER BY lesson_plan_lesson.lesson_order",pg_escape_string($row['id']));
+                $lessonResult = $GLOBALS['transaction']->query($query);
+                $lessonArray = array();
+
+                if($lessonResult!=="none")
+                {
+                    foreach($lessonResult as $lessonRow)
+                    {
+                        $query = sprintf("SELECT addition_type FROM lesson_plan_lesson_addition WHERE lesson_plan_lesson_id=%s",pg_escape_string($lessonRow['id']));
+                        $additionResult = $GLOBALS['transaction']->query($query);
+                        
+                        $additionArray = array();
+                        
+                        if($additionResult!="none")
+                        {
+                            foreach($additionResult as $additionRow)
+                            {
+                                $additionArray[] = $additionRow['addition_type'];
+                            }
+                        }
+
+                        $lessonArray[] = array("name"=>preg_replace('/_/',' ',$lessonRow['lesson']),"path"=>"/data/material/{$lessonRow['field']}/{$lessonRow['subject']}/{$lessonRow['course']}/{$lessonRow['section']}/{$lessonRow['lesson']}/","order"=>$lessonRow['order'],"additions"=>$additionArray);
+                    }
+                }
+                
+                $this->childData[] = array("name"=>preg_replace('/_/',' ',$row['name']),"path"=>"/data/lessonplan/{$this->id}/".$row['name']."/","id"=>$row['id'],"order"=>$row['section_order'],"lessons"=>$lessonArray);
             }
         }
     }

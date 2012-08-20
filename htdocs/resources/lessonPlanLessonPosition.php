@@ -1,7 +1,7 @@
 <?php
-    require_once("classes/resources/LessonPlanSection.php");
+    require_once("classes/resources/LessonPlanLesson.php");
     require_once("classes/resources/User.php");
-    $lessonPlanSection = new LessonPlanSection();
+    $lessonPlanLesson = new LessonPlanLesson();
     
     switch (strtolower($this->request->getMethod()))
     {
@@ -10,9 +10,9 @@
 		case 'put':
 		case 'post':
 			$payload = json_decode($this->request->getPayload());
-			if($lessonPlanSection->loadFromUri($payload->oldPath))
+			if($lessonPlanLesson->loadFromUri($payload->oldPath))
 			{
-				if($lessonPlanSection->setPosition((int)$payload->newOrder,User::usernameToId($payload->username)))
+				if($lessonPlanLesson->setPosition($payload->newPath,(int)$payload->newOrder,$payload->oldPath))
 				{
 					$this->response->setPayload("Success.");
 					$this->response->setContentType("text/xml");

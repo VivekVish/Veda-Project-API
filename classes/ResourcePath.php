@@ -86,6 +86,10 @@
                         {
                             $this->file = "lessonPlanSectionPosition.php";
                         }
+                        else if($pathArray[1]=="lessonplan")
+                        {
+                            $this->file = "lessonPlanLesson.php";
+                        }
                         break;
                     case 6:
                         if($pathArray[1]=="material")
@@ -106,6 +110,14 @@
                             {
                                 $this->file = "section.php";
                             }
+                        }
+                        else if($pathArray[1]=="lessonplan"&&$pathArray[5]=="position")
+                        {
+                            $this->file = "lessonPlanLessonPosition.php";
+                        }
+                        else if($pathArray[1]=="lessonplan")
+                        {
+                            $this->file = "lessonPlanLessonAddition.php";
                         }
                         break;
                     case 7:

@@ -54,7 +54,7 @@ class LessonPlanSection
     {
         $this->id = $id;
         
-        $query = sprintf("SELECT * FROM lesson_plan_section WHERE id=%s",pg_escape_string($id));
+        $query = sprintf("SELECT * FROM lesson_plan_section WHERE id=%s ORDER BY section_order",pg_escape_string($id));
         $result = $GLOBALS['transaction']->query($query,134);
         
         $this->name = $result[0]["name"];
@@ -103,6 +103,14 @@ class LessonPlanSection
     
     public function delete()
     {
+        $query = sprintf("SELECT * FROM lesson_plan_lesson WHERE section_id=%s",pg_escape_string($this->id));
+        $result = $GLOBALS['transaction']->query($query);
+        
+        if($result!=="none")
+        {
+            Error::generateError(69);
+        }
+        
         $query = sprintf("DELETE FROM lesson_plan_section WHERE id=%s",pg_escape_string($this->id));
         $GLOBALS['transaction']->query($query,137);
         return true;
@@ -124,12 +132,13 @@ class LessonPlanSection
                             pg_escape_string($newOrder),
                             pg_escape_string($this->parentId));
         }
-
+        
         $result = $GLOBALS['transaction']->query($query,138);
 
-        $query = sprintf("UPDATE section SET section_order = %s WHERE id='%s'",
+        $query = sprintf("UPDATE lesson_plan_section SET section_order = %s WHERE id='%s'",
                     pg_escape_string($newOrder),
                     pg_escape_string($this->id));
+
         $result = $GLOBALS['transaction']->query($query,138);
         
         #If this is going to be used, it needs to be changed. This is taken straight from the Section class.
