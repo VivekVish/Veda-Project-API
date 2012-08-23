@@ -254,6 +254,14 @@ class LessonPlanManager
     # Delete 
     public function delete()
     {
+        $query = sprintf("SELECT * FROM lesson_plan_section WHERE lesson_plan_id=%s",pg_escape_string($this->id));
+        $result = $GLOBALS['transaction']->query($query);
+        
+        if($result!=="none")
+        {
+            Error::generateError(146);
+        }
+        
         $this->removeTagAttachments();
         
         $query = sprintf("DELETE FROM lesson_plan WHERE id=%s",pg_escape_string($this->id));

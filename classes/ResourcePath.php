@@ -152,6 +152,10 @@
                             {
                                 $this->file = "quizOutline.php";
                             }
+                            else if($pathArray[7]=="quiz")
+                            {
+                                $this->file = "fullQuiz.php";
+                            }
                             else if($pathArray[7]=="lessonAdditions")
                             {
                                 $this->file = "lessonAdditionsByLesson.php";

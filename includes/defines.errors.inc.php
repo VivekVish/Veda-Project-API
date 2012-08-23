@@ -145,3 +145,4 @@
     define("ERROR_143","Unable to move lesson plan lesson.");define("DEBUGERROR_143","Unable to move lesson plan lesson in LessonPlanLesson::setPosition().");
     define("ERROR_144","Unable to delete lesson plan lesson.");define("DEBUGERROR_144","Unable to delete lesson plan lesson in LessonPlanLesson::delete().");
     define("ERROR_145","Unable to delete lesson plan lesson addition.");define("DEBUGERROR_145","Unable to delete lesson plan lesson addition in LessonPlanLesson::dropAddition().");
+    define("ERROR_146","Lesson plan still has sections in it.");define("DEBUGERROR_146","Lesson plan still has sections in it.");

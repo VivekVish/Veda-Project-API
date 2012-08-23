@@ -26,9 +26,8 @@ class LessonPlanLesson
     public function loadFromUri($uri)
     {
         $uriArr = explode("/",trim($uri,"/"));
-        $query = sprintf("SELECT lesson_plan_lesson.id FROM lesson_plan_lesson LEFT JOIN lesson_plan_section ON lesson_plan_section.id=lesson_plan_lesson.section_id LEFT JOIN lesson_plan ON lesson_plan.id=lesson_plan_section.lesson_plan_id WHERE lesson_plan_id=%s AND lesson_plan_section.name='%s'",pg_escape_string($uriArr[2]),pg_escape_string($uriArr[3]));
+        $query = sprintf("SELECT lesson_plan_lesson.id FROM lesson_plan_lesson LEFT JOIN lesson_plan_section ON lesson_plan_section.id=lesson_plan_lesson.section_id LEFT JOIN lesson_plan ON lesson_plan.id=lesson_plan_section.lesson_plan_id LEFT JOIN lesson ON lesson_plan_lesson.lesson_id=lesson.id WHERE lesson_plan_id=%s AND lesson_plan_section.name='%s' AND lesson.name='%s'",pg_escape_string($uriArr[2]),pg_escape_string($uriArr[3]),pg_escape_string($uriArr[4]));
         $result = $GLOBALS['transaction']->query($query,142);
-        
         $this->loadFromId($result[0]['id']);
         
         return true;
