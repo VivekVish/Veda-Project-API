@@ -180,6 +180,16 @@ Class Discussion extends Content
 		# Failure
 		return false;
 	}
+        
+        public function getElementType()
+        {
+            return $this->elementType;
+        }
+        
+        public function getElementId()
+        {
+            return $this->elementId;
+        }
 }
 
 ?>

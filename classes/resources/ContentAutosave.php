@@ -17,24 +17,24 @@ class ContentAutosave extends Material
     protected $citations = array();
     
     ########################################################
-	#### Constructor and main function #####################
-	########################################################
+    #### Constructor and main function #####################
+    ########################################################
 
-	# Constructor
-	public function __construct()
-	{
-	}
+    # Constructor
+    public function __construct()
+    {
+    }
     
     ########################################################
-	#### Helper functions for loading object ###############
-	########################################################
-	public function loadFromUri($uri,$dieOnFail=false)
-	{        
-		if (!empty($uri))
-		{
-			$uri= trim($uri, "/");
-			$uriArr = explode("/", $uri);
-            
+    #### Helper functions for loading object ###############
+    ########################################################
+    public function loadFromUri($uri,$dieOnFail=false)
+    {        
+        if (!empty($uri))
+        {
+            $uri= trim($uri, "/");
+            $uriArr = explode("/", $uri);
+
             if(count($uriArr)==10)
             {
                 $this->elementType = "lesson";
@@ -45,14 +45,14 @@ class ContentAutosave extends Material
                 $this->elementType = "discussion";
                 $this->userId = User::usernameToId($uriArr[10]);
             }
-            
+
             $this->parentId = parent::URIToId($uri,$this->elementType);
-            
+
             $this->deleteOldEntries();
             $this->deleteSavedEntry();
-            
+
             $query = sprintf("SELECT * FROM autosave WHERE element_id='%s' AND element_type='%s' AND user_id='%s'",pg_escape_string($this->parentId),pg_escape_string($this->elementType),pg_escape_string($this->userId));
-  
+
             if($dieOnFail)
             {
                 $result = $GLOBALS['transaction']->query($query,1);
@@ -60,23 +60,23 @@ class ContentAutosave extends Material
             else
             {
                 $result = $GLOBALS['transaction']->query($query);
-                
+
                 if($result==="none")
                 {
                     return false;
                 }
             }
-            
+
             $row = $result[0];
             $this->content = stripslashes($row['content']);
             $this->id = $row['id'];
             $this->path = $uri;
-            
+
             if($this->elementType=="lesson")
             {
                 $lesson = new Lesson();
                 $lesson->loadFromId($this->parentId);
-                $this->name = $lesson->name;
+                $this->name = $lesson->getName();
             }
             else if($this->elementType=="discussion")
             {
@@ -86,7 +86,7 @@ class ContentAutosave extends Material
                 {
                     $lesson = new Lesson();
                     $lesson->loadFromId($discussion->getElementId());
-                    $this->name = $lesson->name;
+                    $this->name = $lesson->getName();
                 }
                 else if($discussion->getElementType()=="course")
                 {
@@ -101,9 +101,9 @@ class ContentAutosave extends Material
             }
 
             return true;
-		}
-		return false;
-	}
+        }
+        return false;
+    }
     
     public function loadFromPayload($payload,$path)
     {

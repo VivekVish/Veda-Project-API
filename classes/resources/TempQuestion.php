@@ -17,10 +17,10 @@ class TempQuestion
     protected $answerChoices=array();
     
     # Constructor
-	public function __construct()
-	{
-		
-	}
+    public function __construct()
+    {
+
+    }
     
     public function loadFromUri($uri)
     {
@@ -89,77 +89,78 @@ class TempQuestion
     # Load's array of ILO's from DB or from content
 	public function loadIlos()
 	{
-		$this->ilos = array();
-        $contentHTML = $this->getHTML($this->content,$answerChoices);
+            $this->ilos = array();
+            $contentHTML = $this->getHTML($this->content,$answerChoices);
         
-		$contentXML = new SimpleXMLElement("<parent>".$contentHTML."</parent>");
-		$iloArray = $contentXML->xpath('//*[@data-ilotype]');
-		foreach($iloArray as $index => $iloElement)
-		{
-			foreach($iloElement->attributes() as $name=>$value)
-			{
-				if($name=="id")
-				{
-					$id = preg_replace('/ilo/',"",$value);
-					$this->ilos[$id] = new Ilo($id, null, null);
-				}
-			}	
-		}
+            $contentXML = new SimpleXMLElement("<parent>".$contentHTML."</parent>");
+            $iloArray = $contentXML->xpath('//*[@data-ilotype]');
+            foreach($iloArray as $index => $iloElement)
+            {
+                foreach($iloElement->attributes() as $name=>$value)
+                {
+                    if($name=="id")
+                    {
+                        $id = preg_replace('/ilo/',"",$value);
+                        $this->ilos[$id] = new Ilo($id, null, null);
+                    }
+                }	
+            }
 
-		if(!empty($this->ilos))
-		{
-			return true;
-		}
+            if(!empty($this->ilos))
+            {
+                return true;
+            }
 
-		return false;
+            return false;
 	}
     
     # Load ILOs from Array
     public function loadILOsFromArray($ArrayOfILOs)
     {
-		if(sizeof($ArrayOfILOs)>0)
-		{
-        	foreach ($ArrayOfILOs as $ndx => $ilo)
-			{
-				$tmp[$ndx] = $ilo;
-			}
-       		return $this->setILOs($tmp);
-		}
-		
-		return;
+        if(sizeof($ArrayOfILOs)>0)
+        {
+            foreach ($ArrayOfILOs as $ndx => $ilo)
+            {
+                $tmp[$ndx] = $ilo;
+            }
+            return $this->setILOs($tmp);
+        }
+
+        return;
     }
     
     # Save's ilo's to DB
-	public function saveIlos($userId,$newILOIds,$oldILOIds)
-	{
+    public function saveIlos($userId,$newILOIds,$oldILOIds)
+    {
         $deadILOs = array_diff($oldILOIds,$newILOIds);
         
         foreach($deadILOs as $ilo)
         {
             Ilo::killIlo($ilo);
         }
-        
-		foreach($this->ilos as $ilo)
-		{
-			$ilo->save($userId,$newILOIds);
-		}
-	}
+
+        foreach($this->ilos as $ilo)
+        {
+            $ilo->save($userId,$newILOIds);
+        }
+    }
     
     public function setILOs($ilos)
-	{
-		# Kill old ilos
-		unset($this->ilos);
+    {
+        # Kill old ilos
+        unset($this->ilos);
 
-		# Setup pattern for type extraction
-		foreach ($ilos as $id => $ilo)
-		{
+        # Setup pattern for type extraction
+        foreach ($ilos as $id => $ilo)
+        {
             $type= $ilo->type;
             $id = substr($id, 3);
             $content = json_encode($ilo);
             $this->ilos[$id] = new Ilo($id, $content, $type);
-		}
-		return true;
-	}
+        }
+        
+        return true;
+    }
     
     public function getHTML($content, $answerChoices)
     {
@@ -194,7 +195,10 @@ class TempQuestion
                 
                 $this->questionOrder = $result[0]['question_order'];
             }
-            $this->delete();
+            
+            $oldQuestion = new TempQuestion();
+            $oldQuestion->loadFromId($this->id);
+            $oldQuestion->delete();
         }
         else
         {
