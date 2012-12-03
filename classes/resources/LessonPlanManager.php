@@ -1,5 +1,7 @@
 <?php
 
+require_once('classes/resources/User.php');
+
 class LessonPlanManager
 {
     ########################################################
@@ -9,22 +11,28 @@ class LessonPlanManager
     protected $name = null;
     protected $tags = array();
     protected $notes = null;
+    protected $age = null;
+    protected $gender = null;
+    protected $literacy = null;
     protected $json = null;
     protected $childData = array();
+    protected $username = null;
+    protected $location = null;
+    protected $image = null;
     
     ########################################################
-	#### Constructor #######################################
-	########################################################
+    #### Constructor #######################################
+    ########################################################
     
     # Constructor
-	public function __construct()
-	{
-		
-	}
+    public function __construct()
+    {
+
+    }
     
     ########################################################
-	#### Helper functions for loading object ###############
-	########################################################
+    #### Helper functions for loading object ###############
+    ########################################################
     
     # Load from path
     public function loadFromUri($uri)
@@ -45,7 +53,12 @@ class LessonPlanManager
         $this->name = $result[0]['name'];
         $this->notes = $result[0]['notes'];
         $this->tags = LessonPlanManager::getTagsByLessonPlanId($id);
-        
+        $this->age = $result[0]['age'];
+        $this->gender = $result[0]['gender'];
+        $this->literacy = $result[0]['literacy'];
+        $this->location = $result[0]['location'];
+        $this->image = $result[0]['image'];
+        $this->username = User::idToUsername($result[0]['user_id']);
         return true;
     }
     
@@ -68,6 +81,11 @@ class LessonPlanManager
         $this->name=$payload->name;
         $this->tags=$payload->tags;
         $this->notes=$payload->notes;
+        $this->age=$payload->age;
+        $this->gender=$payload->gender;
+        $this->location=$payload->location;
+        $this->image=$payload->image;
+        $this->literacy=$payload->literacy == "yes";
                 
         return true;
     }
@@ -130,7 +148,7 @@ class LessonPlanManager
     public function buildJSON()
     {
         $this->loadChildData();
-        $this->json=json_encode(array("name"=>$this->name,"tags"=>$this->tags,"notes"=>$this->notes,"id"=>$this->id,"children"=>$this->childData));
+        $this->json=json_encode(array("name"=>$this->name,"tags"=>$this->tags,"notes"=>$this->notes,"age"=>$this->age,"literacy"=>$this->literacy,"gender"=>$this->gender,"image"=>$this->image,"location"=>$this->location,"id"=>$this->id,"children"=>$this->childData,"username"=>$this->username));
         return true;
     }
     
@@ -154,7 +172,7 @@ class LessonPlanManager
             foreach($result as $key=>$row)
             {
                 $tags = join(',',LessonPlanManager::getTagsByLessonPlanId($row['id']));
-                $returnArray[$key] = array("id"=>$row['id'],"name"=>$row['name'],"notes"=>$row['notes'],"tags"=>$tags);
+                $returnArray[$key] = array("id"=>$row['id'],"name"=>$row['name'],"notes"=>$row['notes'],"tags"=>$tags,"age"=>$row['age'],"literacy"=>$row['literacy'],"gender"=>$row['gender'],"image"=>$row['image'],"location"=>$row['location']);
             }
         }
         
@@ -193,7 +211,7 @@ class LessonPlanManager
 
             if($result==="none")
             {
-                $query = sprintf("INSERT INTO lesson_plan (user_id,name,notes) VALUES (%s,'%s','%s')",pg_escape_string($userId),pg_escape_string($this->name),pg_escape_string($this->notes));
+                $query = sprintf("INSERT INTO lesson_plan (user_id,name,notes,age,gender,location,image,literacy) VALUES (%s,'%s','%s','%s','%s','%s','%s',%s)",pg_escape_string($userId),pg_escape_string($this->name),pg_escape_string($this->notes),pg_escape_string($this->age),pg_escape_string($this->gender),pg_escape_string($this->location),pg_escape_string($this->image),$this->literacy?"true":"false");
                 $GLOBALS['transaction']->query($query,119);
             }
             else
@@ -208,7 +226,7 @@ class LessonPlanManager
         }
         else
         {
-            $query = sprintf("UPDATE lesson_plan SET name='%s',notes='%s' WHERE id=%s",pg_escape_string($this->name),pg_escape_string($this->notes),pg_escape_string($this->id));
+            $query = sprintf("UPDATE lesson_plan SET name='%s',notes='%s',age='%s',gender='%s',location='%s',image='%s',literacy='%s' WHERE id=%s",pg_escape_string($this->name),pg_escape_string($this->notes),pg_escape_string($this->age),pg_escape_string($this->gender),pg_escape_string($this->location),pg_escape_string($this->image),$this->literacy?"true":"false",pg_escape_string($this->id));
             $result = $GLOBALS['transaction']->query($query,119);
             
             $this->removeTagAttachments();

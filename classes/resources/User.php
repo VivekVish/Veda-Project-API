@@ -181,6 +181,14 @@ class User
         return $userIdArray[0]['id'];
     }
     
+    public static function idToUsername($id)
+    {
+        $query = sprintf("SELECT username FROM usernames WHERE id='%s'",pg_escape_string($id));
+        $userIdArray = $GLOBALS['transaction']->query($query,89);
+
+        return $userIdArray[0]['username'];
+    }
+    
     ########################################################
 	### Getters and Setters ################################
 	########################################################
