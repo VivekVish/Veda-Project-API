@@ -8,6 +8,7 @@ class TempQuestion
 {
     protected $id=null;
     protected $content=null;
+    protected $response=null;
     protected $correctAnswer=null;
     protected $ilos = array();
     protected $name=null;
@@ -48,6 +49,7 @@ class TempQuestion
             $this->name=$result[0]['name'];
             $this->questionOrder=$result[0]['question_order'];
             $this->lessonId=$result[0]['lesson_id'];
+            $this->response=$result[0]['response'];
             
             $query = sprintf("SELECT * FROM temp_answers WHERE answerfield_id=%s",pg_escape_string($this->id));
             $result = $GLOBALS['transaction']->query($query);
@@ -72,6 +74,7 @@ class TempQuestion
     {
         $this->id=$id;
         $this->content=$payload->content;
+        $this->response=$payload->response;
         $this->correctAnswer=$payload->correctAnswer;
         $this->name=$payload->name;
         $this->questionOrder=$payload->questionOrder;
@@ -83,14 +86,14 @@ class TempQuestion
     
     public function buildJSON()
     {
-        $this->json = json_encode(array("id"=>$this->id,"content"=>$this->content,"correctAnswer"=>$this->correctAnswer,"name"=>$this->name,"questionOrder"=>$this->questionOrder,"lessonId"=>$this->lessonId,"answerChoices"=>$this->answerChoices));
+        $this->json = json_encode(array("id"=>$this->id,"content"=>$this->content,"response"=>$this->response,"correctAnswer"=>$this->correctAnswer,"name"=>$this->name,"questionOrder"=>$this->questionOrder,"lessonId"=>$this->lessonId,"answerChoices"=>$this->answerChoices));
     }
     
     # Load's array of ILO's from DB or from content
 	public function loadIlos()
 	{
             $this->ilos = array();
-            $contentHTML = $this->getHTML($this->content,$answerChoices);
+            $contentHTML = $this->getHTML($this->content,$this->answerChoices,$this->response);
         
             $contentXML = new SimpleXMLElement("<parent>".$contentHTML."</parent>");
             $iloArray = $contentXML->xpath('//*[@data-ilotype]');
@@ -162,20 +165,23 @@ class TempQuestion
         return true;
     }
     
-    public function getHTML($content, $answerChoices)
+    public function getHTML($content, $answerChoices, $response)
     {
         $contentHTML = $content;
+        
         foreach($answerChoices as $index=>$answer)
         {
             $contentHTML.=$answer;
         }
+        
+        $contentHTML.=$response;
         
         return $contentHTML;
     }
     
     public function save($userId)
     {
-        $contentHTML = $this->getHTML($this->content,$this->answerChoices);
+        $contentHTML = $this->getHTML($this->content,$this->answerChoices,$this->response);
         
         $newILOIds = Lesson::getILOIds($contentHTML);
         
@@ -184,7 +190,7 @@ class TempQuestion
             $oldILOIds = array();
             $oldQuestion = new TempQuestion();
             $oldQuestion->loadFromId($this->id);
-            $oldHTML = $this->getHTML($oldQuestion->content,$oldQuestion->answerChoices);
+            $oldHTML = $this->getHTML($oldQuestion->content,$oldQuestion->answerChoices,$oldQuestion->response);
             
             $oldILOIds = Lesson::getILOIds($oldHTML);
             
@@ -223,7 +229,7 @@ class TempQuestion
             $this->id=$result[0]['nextval'];
         }
         
-        $query = sprintf("INSERT INTO temp_questions (id,content,answer,name,user_id,question_order,lesson_id) VALUES (%s,'%s','%s','%s',%s,%s,%s)",pg_escape_string($this->id),pg_escape_string($this->content),pg_escape_string($this->correctAnswer),pg_escape_string($this->name),pg_escape_string($userId),pg_escape_string($this->questionOrder),pg_escape_string($this->lessonId));
+        $query = sprintf("INSERT INTO temp_questions (id,content,response,answer,name,user_id,question_order,lesson_id) VALUES (%s,'%s','%s',%s,'%s',%s,%s,%s)",pg_escape_string($this->id),pg_escape_string($this->content),pg_escape_string($this->response),pg_escape_string($this->correctAnswer),pg_escape_string($this->name),pg_escape_string($userId),pg_escape_string($this->questionOrder),pg_escape_string($this->lessonId));
         $GLOBALS['transaction']->query($query,115);
 
         foreach($this->answerChoices as $key=>$choice)
@@ -263,7 +269,7 @@ class TempQuestion
     
     public function delete()
     {
-        $contentHTML = $this->getHTML($this->content,$this->answerChoices);
+        $contentHTML = $this->getHTML($this->content,$this->answerChoices,$this->response);
         
         $deadILOs = Lesson::getILOIds($contentHTML);
         

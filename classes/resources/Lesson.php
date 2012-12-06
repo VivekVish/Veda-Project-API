@@ -98,118 +98,118 @@ Class Lesson extends Content
 	# Save lesson (creates one if no id is set)
 	public function save($userId,$notes=null)
 	{
-		if (!empty($this->parentId) && !empty($this->name) && !empty($this->content)) 
-		{
-            $newILOIds = Content::getILOIds($this->content);
-            $oldILOIds = array();
+            if (!empty($this->parentId) && !empty($this->name) && !empty($this->content)) 
+            {
+                $newILOIds = Content::getILOIds($this->content);
+                $oldILOIds = array();
             
 			# Update existing lesson
-			if (!empty($this->id))
-			{
-                $query = sprintf("SELECT content FROM lesson WHERE id='%s'",pg_escape_string($this->id));
-                $result = $GLOBALS['transaction']->query($query);
-                $oldILOIds = Content::getILOIds($result[0]['content']);
-                $query = sprintf("UPDATE lesson SET section_id = '%s', name = '%s', content = '%s' WHERE id='%s'", 
-                        pg_escape_string($this->parentId),
-                        pg_escape_string($this->name),
-                        pg_escape_string($this->content),
-                        pg_escape_string($this->id));
-			}
-			# New lesson
-			else
-			{
-				if(empty($this->order))
-				{
-					$query = sprintf("SELECT MAX(lesson_order) FROM lesson WHERE section_id='%s'",pg_escape_string($this->parentId));
-					$result = $GLOBALS['transaction']->query($query);
+                if (!empty($this->id))
+                {
+                    $query = sprintf("SELECT content FROM lesson WHERE id='%s'",pg_escape_string($this->id));
+                    $result = $GLOBALS['transaction']->query($query);
+                    $oldILOIds = Content::getILOIds($result[0]['content']);
+                    $query = sprintf("UPDATE lesson SET section_id = '%s', name = '%s', content = '%s' WHERE id='%s'", 
+                                    pg_escape_string($this->parentId),
+                                    pg_escape_string($this->name),
+                                    pg_escape_string($this->content),
+                                    pg_escape_string($this->id));
+                }
+                # New lesson
+                else
+                {
+                    if(empty($this->order))
+                    {
+                        $query = sprintf("SELECT MAX(lesson_order) FROM lesson WHERE section_id='%s'",pg_escape_string($this->parentId));
+                        $result = $GLOBALS['transaction']->query($query);
                     
-                    if($result=="none")
-                    {
-                        $this->order=1;
+                        if($result=="none")
+                        {
+                            $this->order=1;
+                        }
+                        else
+                        {
+                            $this->order=((int)$result[0]['max'])+1;
+                        }
                     }
-                    else
-                    {
-                        $this->order=((int)$result[0]['max'])+1;
-                    }
-				}
 				
-                $query = sprintf("INSERT INTO lesson (section_id, name, description, content, lesson_order) VALUES ('%s', '%s','%s', '%s', '%s')",
+                    $query = sprintf("INSERT INTO lesson (section_id, name, description, content, lesson_order) VALUES ('%s', '%s','%s', '%s', '%s')",
                                 pg_escape_string($this->parentId),
                                 pg_escape_string($this->name),
                                 pg_escape_string($this->description),
                                 pg_escape_string($this->content),
                                 pg_escape_string($this->order));
-			}
+                }
             
-			# Run query
-			$GLOBALS['transaction']->query($query,38);
+                # Run query
+                $GLOBALS['transaction']->query($query,38);
             
-            $this->id = parent::URIToId($this->path,"lesson");
-            
-            $revisionRow = new RevisionRow("lesson_history","lesson");
-            $revisionRow->loadFromData(null,$this->id,$this->name,$this->content,$userId,null);
-            $revisionRow->save();
+                $this->id = parent::URIToId($this->path,"lesson");
 
-            Content::checkILOsExist($this->ilos,$newILOIds);
-            $this->saveIlos($userId,$newILOIds,$oldILOIds);
-            
-            $this->saveCitations();
-            
-			return true;
-		}
+                $revisionRow = new RevisionRow("lesson_history","lesson");
+                $revisionRow->loadFromData(null,$this->id,$this->name,$this->content,$userId,null);
+                $revisionRow->save();
 
-		# Failure
-		return false;
+                Content::checkILOsExist($this->ilos,$newILOIds);
+                $this->saveIlos($userId,$newILOIds,$oldILOIds);
+
+                $this->saveCitations();
+            
+                return true;
+            }
+
+            # Failure
+            return false;
 	} 
     
 	# Removes lesson from database
 	public function delete($user_id=null)
 	{
-        $deadILOs = Content::getILOIds($this->content);
-        
-        foreach($deadILOs as $ilo)
-        {
-            Ilo::killIlo($ilo);
-        }
-        
-		# Delete query
-        $query = sprintf("INSERT INTO deleted_lessons (lesson_id, section_id, course_id, user_id) VALUES (%s,%s,%s,%s)",
-                        pg_escape_string($this->id),
-                        pg_escape_string($this->parentId),
-                        pg_escape_string(parent::URIToId($this->path,"course")),
-                        pg_escape_string((string)$user_id));
-        
-        $GLOBALS['transaction']->query($query,39);
-        
-		$query = sprintf("DELETE FROM lesson WHERE id = %s", pg_escape_string($this->id));
-		$result = $GLOBALS['transaction']->query($query,40);
-        
-        $query = sprintf("DELETE FROM autosave WHERE element_id = %s AND element_type='lesson'", pg_escape_string($this->id));
-		$result = $GLOBALS['transaction']->query($query,102);
-        
-        $query = sprintf("SELECT id FROM discussion WHERE element_type='lesson' AND element_id=%s", pg_escape_string($this->id));
-        $result = $GLOBALS['transaction']->query($query);
-        
-        if($result!="none")
-        {
-            $query = sprintf("DELETE FROM autosave WHERE element_id=%s AND element_type='discussion'",pg_escape_string($result[0]["id"]));;
-            $result = $GLOBALS['transaction']->query($query,103);
-        }
-        
-        $query = sprintf("UPDATE lesson SET lesson_order = lesson_order-1 WHERE lesson_order>%s AND section_id='%s'",
-                            pg_escape_string($this->order),
-                            pg_escape_string($this->parentId));
-        
-        $result = $GLOBALS['transaction']->query($query,41);
-        
-		# Success
-		if ($result)
-		{
-			return true;
-		}
+            $deadILOs = Content::getILOIds($this->content);
 
-		# Failure
-		return false;
+            foreach($deadILOs as $ilo)
+            {
+                Ilo::killIlo($ilo);
+            }
+
+            # Delete query
+            $query = sprintf("INSERT INTO deleted_lessons (lesson_id, section_id, course_id, user_id) VALUES (%s,%s,%s,%s)",
+                            pg_escape_string($this->id),
+                            pg_escape_string($this->parentId),
+                            pg_escape_string(parent::URIToId($this->path,"course")),
+                            pg_escape_string((string)$user_id));
+
+            $GLOBALS['transaction']->query($query,39);
+            
+            $query = sprintf("DELETE FROM lesson WHERE id = %s", pg_escape_string($this->id));
+            $result = $GLOBALS['transaction']->query($query,40);
+
+            $query = sprintf("DELETE FROM autosave WHERE element_id = %s AND element_type='lesson'", pg_escape_string($this->id));
+            $result = $GLOBALS['transaction']->query($query,102);
+
+            $query = sprintf("SELECT id FROM discussion WHERE element_type='lesson' AND element_id=%s", pg_escape_string($this->id));
+            $result = $GLOBALS['transaction']->query($query);
+
+            if($result!="none")
+            {
+                $query = sprintf("DELETE FROM autosave WHERE element_id=%s AND element_type='discussion'",pg_escape_string($result[0]["id"]));;
+                $result = $GLOBALS['transaction']->query($query,103);
+            }
+
+            $query = sprintf("UPDATE lesson SET lesson_order = lesson_order-1 WHERE lesson_order>%s AND section_id='%s'",
+                                pg_escape_string($this->order),
+                                pg_escape_string($this->parentId));
+
+            $result = $GLOBALS['transaction']->query($query,41);
+        
+            # Success
+            if ($result)
+            {
+                return true;
+            }
+
+            # Failure
+            return false;
 	}
 
 	# Set Position
