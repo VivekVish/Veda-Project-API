@@ -171,7 +171,7 @@ class LessonPlanManager
             
             foreach($result as $key=>$row)
             {
-                $tags = join(',',LessonPlanManager::getTagsByLessonPlanId($row['id']));
+                $tags = join(', ',LessonPlanManager::getTagsByLessonPlanId($row['id']));
                 $returnArray[$key] = array("id"=>$row['id'],"name"=>$row['name'],"notes"=>$row['notes'],"tags"=>$tags,"age"=>$row['age'],"literacy"=>$row['literacy'],"gender"=>$row['gender'],"image"=>$row['image'],"location"=>$row['location']);
             }
         }
