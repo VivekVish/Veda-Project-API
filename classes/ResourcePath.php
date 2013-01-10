@@ -44,7 +44,7 @@
                         }
                         else if($pathArray[1]=="ilo")
                         {
-							$this->file = "ilo.php";
+                            $this->file = "ilo.php";
                         }
                         else if($pathArray[1]=="citation")
                         {
@@ -123,16 +123,20 @@
                     case 7:
                         if($pathArray[1]=="material")
                         {
-							if($pathArray[6]=="position")
-							{
-                            	$this->file = "sectionPosition.php";
-							}
-							else
-							{
-								$this->file = "lesson.php";
-							}
+                            if($pathArray[6]=="position")
+                            {
+                                $this->file = "sectionPosition.php";
+                            }
+                            else
+                            {
+                                $this->file = "lesson.php";
+                            }
                         }
-						break;
+                        else if($pathArray[1]=="lessonplan"&&$pathArray[5]=="quiz")
+                        {
+                            $this->file = "lessonPlanQuestion.php";
+                        }
+                        break;
                     case 8:
                         if($pathArray[1]=="material")
                         {
@@ -144,10 +148,10 @@
                             {
                                 $this->file = "ilosByLesson.php";
                             }
-							else if($pathArray[7]=="position")
-							{
-								$this->file = "lessonPosition.php";
-							}
+                            else if($pathArray[7]=="position")
+                            {
+                                $this->file = "lessonPosition.php";
+                            }
                             else if($pathArray[7]=="quizOutline")
                             {
                                 $this->file = "quizOutline.php";

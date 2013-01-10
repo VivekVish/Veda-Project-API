@@ -31,7 +31,7 @@ switch (strtolower($this->request->getMethod()))
             
             $this->response->setPayload(json_encode($submittedAnswers));
             $this->response->setContentType("text/xml");
-			$this->setStatus(true);
+            $this->setStatus(true);
         }
         break;
     case 'post':
@@ -44,7 +44,7 @@ switch (strtolower($this->request->getMethod()))
             $quizBlueprint->deleteUserAnswers(User::usernameToId($uriArr[8]));
             $this->response->setPayload("Success.");
             $this->response->setContentType("text/xml");
-			$this->setStatus(true);
+            $this->setStatus(true);
         }
         break;
 }
