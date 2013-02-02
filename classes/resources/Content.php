@@ -13,10 +13,10 @@ abstract class Content extends Material
 
     protected $parentId = null;
     protected $name = null;
-	protected $content = null;
-	protected $ilos = array();
+    protected $content = null;
+    protected $ilos = array();
     protected $citations = array();
-	protected $ilosIntact = null;
+    protected $ilosIntact = null;
     protected $json = null;
     protected $notes = null;
     protected $userId = null;
@@ -267,54 +267,54 @@ abstract class Content extends Material
     }
     
     ########################################################
-	### Getters and Setters ################################
-	########################################################
+    ### Getters and Setters ################################
+    ########################################################
 
-	# Set content 
-	public function setContent($content)
-	{
-		$this->content = $content;
-	}
+    # Set content 
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
 
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-	public function setPath($path)
-	{
-		$this->path = $path;
-	}
-    
-	public function getName()
-	{
-		return $this->name;
-	}
+    public function setPath($path)
+    {
+        $this->path = $path;
+    }
 
-	public function getContent()
-	{
-		return $this->content;
-	}
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	public function getILOs()
-	{
-		return $this->ilos;
-	}
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    public function getILOs()
+    {
+        return $this->ilos;
+    }
     
     public function getJSON()
     {
         return $this->json;
     }
 
-	public function getXML()
-	{
-		return $this->xml;
-	}
-        
-	public function getPath()
-	{
-		return $this->path;
-	}
+    public function getXML()
+    {
+        return $this->xml;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
+    }
     
     public function getLessonOrder()
     {

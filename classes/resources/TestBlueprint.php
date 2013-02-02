@@ -41,6 +41,7 @@ class TestBlueprint {
         $query = sprintf("SELECT * FROM temp_questions WHERE lesson_id = %s", pg_escape_string($id)); //get all the stuff from the row where id=the id of the test we want
         $result = $GLOBALS["transaction"]->query($query); //store all the stuff from the row into an array called $results
         $this->childData = array();
+
         if($result!=="none")
         {
             for ($i = 0; $i < sizeOf($result); $i++)
@@ -50,9 +51,12 @@ class TestBlueprint {
                 $this->childData[$result[$i]['question_order']]=array("name"=>$name,"id"=>$question_id);
             }
         }
+        
+        return true;
     }
 
-    public function loadChildData() {//stores question blueprint data into $childData
+    public function loadChildData()
+    {//stores question blueprint data into $childData
         $query = sprintf("SELECT * FROM question_attachment WHERE test_id = %s", pg_escape_string($this->id)); //gets IDs and revision_ids related to this test
         $questionAttachData = $GLOBALS["transaction"]->query($query); //result should contain a bunch of question attachment data
         for ($i = 0; $i < sizeOf($questionAttachData); $i++) {

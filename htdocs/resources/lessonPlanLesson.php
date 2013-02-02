@@ -8,7 +8,8 @@
         case 'get':
             if($lessonPlanLesson->loadFromUri($this->request->getUri()))
             {
-                $this->response->setPayload($image->buildJSON());
+                $lessonPlanLesson->buildJSON();
+                $this->response->setPayload($lessonPlanLesson->getJSON());
                 $this->setStatus(true);
                 break;
             }

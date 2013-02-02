@@ -9,8 +9,8 @@ class LessonAddition
     protected $additionObject = null;
     
     # Constructor
-	public function __construct($type)
-	{
+    public function __construct($type)
+    {
         $this->type = $type;
         
         switch($type)
@@ -24,15 +24,15 @@ class LessonAddition
             default:
                 break;
         }
-	}
+    }
     
     public function loadFromUri($uri,$dieOnFail=true)
-	{
+    {
         return $this->additionObject->loadFromUri($uri,$dieOnFail);
     }
     
     public function loadFromPayload($payload,$path)
-	{
+    {
         return $this->additionObject->loadFromPayload($payload,$path);
     }
     
@@ -59,5 +59,10 @@ class LessonAddition
     public function getJSON()
     {
         return $this->additionObject->getJSON();
+    }
+    
+    public function getId()
+    {
+        return $this->additionObject->getId();
     }
 }

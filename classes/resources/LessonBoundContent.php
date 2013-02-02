@@ -8,15 +8,15 @@ class LessonBoundContent extends Content
     protected $name = "";
     
     # Constructor
-	public function __construct()
-	{
+    public function __construct()
+    {
         parent::__construct("additions");
-		# ILO's are not present by default
-		$this->ilosIntact = false;
-	}
+        # ILO's are not present by default
+        $this->ilosIntact = false;
+    }
     
     public function loadFromPayload($payload,$path)
-	{
+    {
         $this->name = $payload->name;
         $this->lessonId = Material::URIToId($path,"lesson");
         return parent::loadFromPayload($payload, $path);
@@ -108,7 +108,7 @@ class LessonBoundContent extends Content
         }
         
         $query = sprintf("DELETE FROM lesson_additions WHERE id = %s", pg_escape_string($this->id));
-		$result = $GLOBALS['transaction']->query($query,128);
+        $result = $GLOBALS['transaction']->query($query,128);
         
         return true;
     }
