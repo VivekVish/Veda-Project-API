@@ -37,7 +37,20 @@ Class Request
 		# Get other important request information
 		$this->remoteIP = $_SERVER['REMOTE_ADDR'];	
 		$this->host = $_SERVER['HTTP_HOST'];
-		$this->uri = $_SERVER['SCRIPT_URL'];
+		
+		# Not all servers has SCRIPT_URL
+		if (!empty($_SERVER['SCRIPT_URL']))   
+			$this->uri = $_SERVER['SCRIPT_URL'];
+		elseif (!empty($_SERVER['REDIRECT_URL'])) 
+			$this->uri = $_SERVER['REDIRECT_URL'];
+		elseif (!empty($_SERVER['REQUEST_URI'])) {
+			$p = parse_url($_SERVER['REQUEST_URI']);
+			$this->uri = $p['path'];
+		}
+		# Remove additional path
+		$dir_pattern = '/^'.preg_quote(dirname($_SERVER['SCRIPT_NAME']), '/').'/i';
+		$this->uri = preg_replace($dir_pattern, '', $this->uri);
+		
 		$this->method = $_SERVER['REQUEST_METHOD'];
 		$this->handler = $_SERVER['SCRIPT_FILENAME'];
 		switch (strtolower($this->method))
