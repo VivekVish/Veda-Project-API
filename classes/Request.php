@@ -47,10 +47,11 @@ Class Request
 			$p = parse_url($_SERVER['REQUEST_URI']);
 			$this->uri = $p['path'];
 		}
+
 		# Remove additional path
-		$dir_pattern = '/^'.preg_quote(dirname($_SERVER['SCRIPT_NAME']), '/').'/i';
-		$this->uri = preg_replace($dir_pattern, '', $this->uri);
-		
+		#$dir_pattern = '/^'.preg_quote(dirname($_SERVER['SCRIPT_NAME']), '/').'/i';
+		#$this->uri = preg_replace($dir_pattern, '', $this->uri);
+
 		$this->method = $_SERVER['REQUEST_METHOD'];
 		$this->handler = $_SERVER['SCRIPT_FILENAME'];
 		switch (strtolower($this->method))

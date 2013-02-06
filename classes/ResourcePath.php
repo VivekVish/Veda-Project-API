@@ -15,7 +15,7 @@
         {
             $path = trim($pathString, "/");
             $pathArray = explode("/", $path);
-            
+
             if($pathArray[0]=="data")
             {
                 switch(count($pathArray))
