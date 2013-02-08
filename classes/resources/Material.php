@@ -141,6 +141,95 @@
             }
         }
         
+        // DESC: Converts an id to a URI
+        // PARAMETER: $id is a id number
+        // PARAMETER: level is the URI level
+        // RETURNS: string uri if successful, null otherwise
+        public static function IdToURI($id,$level)
+        {            
+            switch($level)
+            {
+                case "field":
+                    $query = sprintf("SELECT field.name AS field FROM field WHERE id=%s",
+                                      pg_escape_string($id));
+                    break;
+                case "subject":
+                    $query = sprintf("SELECT field.name AS field,
+                                             subject.name AS subject
+                                      FROM subject
+                                      LEFT JOIN field ON subject.field_id=field.id
+                                      WHERE subject.id=%s",
+                                      pg_escape_string($id));
+                    break;
+                case "course":
+                    $query = sprintf("SELECT field.name AS field,
+                                             subject.name AS subject,
+                                             course.name AS course
+                                      FROM course
+                                      LEFT JOIN subject on course.subject_id=subject.id
+                                      LEFT JOIN field ON subject.field_id=field.id
+                                      WHERE course.id=%s",
+                                      pg_escape_string($id));
+                    break;
+                case "section":
+                    $query = sprintf("SELECT field.name AS field,
+                                             subject.name AS subject,
+                                             course.name AS course,
+                                             section.name AS section
+                                      FROM section
+                                      LEFT JOIN course on section.course_id=course.id
+                                      LEFT JOIN subject on course.subject_id=subject.id
+                                      LEFT JOIN field ON subject.field_id=field.id
+                                      WHERE section.id=%s",
+                                      pg_escape_string($id));
+                    break;
+                case "lesson":
+                    $query = sprintf("SELECT field.name AS field,
+                                             subject.name AS subject,
+                                             course.name AS course,
+                                             section.name AS section,
+                                             lesson.name AS lesson
+                                      FROM lesson
+                                      LEFT JOIN section on lesson.section_id=section.id
+                                      LEFT JOIN course on section.course_id=course.id
+                                      LEFT JOIN subject on course.subject_id=subject.id
+                                      LEFT JOIN field ON subject.field_id=field.id
+                                      WHERE lesson.id=%s",
+                                      pg_escape_string($id));
+                    break;
+                default:
+                    Error::generateError(152,"ID: $id");
+                    break;
+            }
+
+            $result = $GLOBALS['transaction']->query($query);
+
+            if(isset($result[0]["lesson"]))
+            {
+                return sprintf("/data/material/%s/%s/%s/%s/%s",$result[0]["field"],$result[0]["subject"],$result[0]["course"],$result[0]["section"],$result[0]["lesson"]);
+            }
+            else if(isset($result[0]["section"]))
+            {
+                return sprintf("/data/material/%s/%s/%s/%s",$result[0]["field"],$result[0]["subject"],$result[0]["course"],$result[0]["section"]);
+            }
+            else if(isset($result[0]["course"]))
+            {
+                return sprintf("/data/material/%s/%s/%s",$result[0]["field"],$result[0]["subject"],$result[0]["course"]);
+            }
+            else if(isset($result[0]["subject"]))
+            {
+                return sprintf("/data/material/%s/%s",$result[0]["field"],$result[0]["subject"]);
+            }
+            else if(isset($result[0]["field"]))
+            {
+                return sprintf("/data/material/%s",$result[0]["field"]);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        
         public function getJSON()
         {
             return $this->json;

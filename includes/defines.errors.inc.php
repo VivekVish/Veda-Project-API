@@ -147,3 +147,8 @@
     define("ERROR_145","Unable to delete module lesson addition.");define("DEBUGERROR_145","Unable to delete module lesson addition in LessonPlanLesson::dropAddition().");
     define("ERROR_146","Lesson plan still has sections in it.");define("DEBUGERROR_146","Lesson plan still has sections in it.");
     define("ERROR_147","Unable to save custom lesson plan addition.");define("DEBUGERROR_147","Unable to save custom lesson plan addition in LessonPlanLesson::saveCustomAddition().");
+    define("ERROR_148","Unable to load user lesson plans.");define("DEBUGERROR_148","Unable to load user lesson plan in UserLessonPlan::loadFromUri().");
+    define("ERROR_149","Unable to save user lesson plans.");define("DEBUGERROR_149","Unable to save user lesson plan in UserLessonPlan::save().");
+    define("ERROR_150","Unable to delete user lesson plans.");define("DEBUGERROR_150","Unable to delete user lesson plan in UserLessonPlan::delete().");
+    define("ERROR_151","You have already added this module.");define("DEBUGERROR_151","Unable to save user lesson plan in UserLessonPlan::save() since it is a duplicate.");
+    define("ERROR_152","Unable to load URI from Id.");define("DEBUGERROR_152","Unable to load URI from Id in Material::loadIdFromURI().");

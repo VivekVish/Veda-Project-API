@@ -25,17 +25,17 @@ Class Course extends Material
 	# Load by URI
 	public function loadFromUri($uri)
 	{
-		if (!empty($uri))
-		{
-            $this->path = $uri;
-			$this->id = parent::URIToId($uri,"course");
+            if (!empty($uri))
+            {
+                $this->path = $uri;
+                $this->id = parent::URIToId($uri,"course");
 			
-            $this->loadFromId($this->id);
+                $this->loadFromId($this->id);
             
-            return true;
-		}
+                return true;
+            }
         
-        return false;
+            return false;
 	}
 
 	# Load from Payload
@@ -82,24 +82,24 @@ Class Course extends Material
         $this->active = $row['active'];
     }
 
-	# Load children Ids
-	public function loadChildData()
-	{
-		if (!empty($this->id))
-		{
-			$query = sprintf("SELECT section.*, 
-									 subject.name AS subject_name,
-									 field.name	AS field_name
-							FROM 
-									section	
-									LEFT JOIN course ON (course.id = section.course_id)
-									LEFT JOIN subject ON (subject.id = course.subject_id)
-									LEFT JOIN field ON (field.id = subject.field_id)
-							WHERE 
-									section.course_id = %s
-                            ORDER BY
-                                    section.section_order", pg_escape_string($this->id));
-			$result = $GLOBALS['transaction']->query($query);
+    # Load children Ids
+    public function loadChildData()
+    {
+        if (!empty($this->id))
+        {
+            $query = sprintf("SELECT section.*, 
+                                     subject.name AS subject_name,
+                                     field.name	AS field_name
+                               FROM 
+                                     section	
+                                     LEFT JOIN course ON (course.id = section.course_id)
+                                     LEFT JOIN subject ON (subject.id = course.subject_id)
+                                     LEFT JOIN field ON (field.id = subject.field_id)
+                               WHERE 
+                                     section.course_id = %s
+                               ORDER BY
+                                     section.section_order", pg_escape_string($this->id));
+            $result = $GLOBALS['transaction']->query($query);
             
             if($result!==false&&$result!=="none")
             {
@@ -115,9 +115,9 @@ Class Course extends Material
                 }
             }
             return true;
-		}
-		return false;
-	}
+        }
+        return false;
+    }
 	
 	########################################################
 	#### Client interface functions   ######################

@@ -264,11 +264,20 @@
                         {
                             $this->file = "lessonPlanManager.php";
                         }
+                        else if($pathArray[1]=="lessonplan")
+                        {
+                            $this->file = "userLessonPlan.php";
+                        }
                         else
                         {
                             $this->file = "user.php";
                         }
                         break;
+                    case 4:
+                        if($pathArray[1]=="lessonplan")
+                        {
+                            $this->file = "userLessonPlan.php";
+                        }
                 }
             }
         }

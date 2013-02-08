@@ -150,12 +150,12 @@ Class Section extends Material
 	#### User interface functions ##########################
 	########################################################
 
-    public function buildJSON()
-    {
-        $this->loadChildData();
-        $jsonArray =array("id"=>$this->id,"parentId"=>$this->parentId,"name"=>$this->name,"description"=>$this->description,"path"=>$this->path,"order"=>$this->order,"active"=>$this->active,"children"=>$this->childData);
-        $this->json = json_encode($jsonArray);
-    }
+        public function buildJSON()
+        {
+            $this->loadChildData();
+            $jsonArray =array("id"=>$this->id,"parentId"=>$this->parentId,"name"=>$this->name,"description"=>$this->description,"path"=>$this->path,"order"=>$this->order,"active"=>$this->active,"children"=>$this->childData);
+            $this->json = json_encode($jsonArray);
+        }
 
 
 	########################################################
@@ -306,12 +306,12 @@ Class Section extends Material
         return false;
     }
 
-	########################################################
-	### Getters and Setters ################################
-	########################################################
+    ########################################################
+    ### Getters and Setters ################################
+    ########################################################
 
-	public function getJSON()
-	{
-		return $this->json;
-	}
+    public function getJSON()
+    {
+            return $this->json;
+    }
 }
