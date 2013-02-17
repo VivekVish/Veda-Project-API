@@ -25,7 +25,7 @@
             {
                 if($userLessonPlan->save())
                 {
-                    $this->response->setPayload("Success.");
+                    $this->response->setPayload(json_encode(array("status"=>"Success.","id"=>$userLessonPlan->getId())));
                     $this->setStatus(true);
                     break;
                 }

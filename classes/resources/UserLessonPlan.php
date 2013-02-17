@@ -121,6 +121,12 @@ class UserLessonPlan
         {
             Error::generateError(151);
         }
+        
+        $query = sprintf("SELECT id FROM user_lesson_plan WHERE lesson_plan_id=%s AND type='%s' AND user_id=%s",pg_escape_string($this->lessonPlanId),pg_escape_string($this->lessonPlanType),pg_escape_string($this->userId));
+        $result = $GLOBALS['transaction']->query($query,149);
+        
+        $this->id = $result[0]['id'];
+        
         return true;
     }
     
@@ -137,6 +143,11 @@ class UserLessonPlan
     public function getJSON()
     {
         return $this->json;
+    }
+    
+    public function getId()
+    {
+        return $this->id;
     }
 }
 
