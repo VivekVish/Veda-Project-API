@@ -45,7 +45,7 @@ class LessonPlanLesson
     {
         $query = sprintf("SELECT * FROM lesson_plan_lesson WHERE id=%s",pg_escape_string($id));
         $result = $GLOBALS['transaction']->query($query,142);
-        
+
         $this->id=$id;
         $this->lessonPlanSectionId=$result[0]['section_id'];
         $this->order=$result[0]['lesson_order'];
@@ -264,13 +264,29 @@ class LessonPlanLesson
         return true;
     }
     
+    public function addAddition($type)
+    {
+        $query = sprintf("SELECT * FROM lesson_plan_lesson_addition WHERE lesson_plan_lesson_id=%s AND addition_type='%s'",pg_escape_string($this->id),pg_escape_string($type));
+        $result = $GLOBALS['transaction']->query($query);
+
+        if($result=="none")
+        {
+            $query = sprintf("INSERT INTO lesson_plan_lesson_addition (lesson_plan_lesson_id,addition_type) VALUES (%s,'%s')",pg_escape_string($this->id),pg_escape_string($type));
+            $GLOBALS['transaction']->query($query,153);
+        }
+        return true;
+    }
+    
     public function dropAddition($additionType)
     {
-        $query = sprintf("SELECT id FROM lesson_additions WHERE lesson_id=%s AND name='%s'",pg_escape_string($this->lessonId),pg_escape_string($additionType));
-        $result = $GLOBALS['transaction']->query($query,145);
-        
-        $query = sprintf("DELETE FROM lesson_plan_custom_addition WHERE lesson_plan_lesson_id=%s and lesson_addition_id=%s",pg_escape_string($this->id),pg_escape_string($result[0]['id']));
-        $result = $GLOBALS['transaction']->query($query,145);
+        if($additionType!="quiz")
+        {
+            $query = sprintf("SELECT id FROM lesson_additions WHERE lesson_id=%s AND name='%s'",pg_escape_string($this->lessonId),pg_escape_string($additionType));
+            $result = $GLOBALS['transaction']->query($query,145);
+
+            $query = sprintf("DELETE FROM lesson_plan_custom_addition WHERE lesson_plan_lesson_id=%s and lesson_addition_id=%s",pg_escape_string($this->id),pg_escape_string($result[0]['id']));
+            $result = $GLOBALS['transaction']->query($query,145);
+        }
         
         $query = sprintf("DELETE FROM lesson_plan_lesson_addition WHERE lesson_plan_lesson_id=%s AND addition_type='%s'",pg_escape_string($this->id),pg_escape_string($additionType));
         $GLOBALS['transaction']->query($query,145);

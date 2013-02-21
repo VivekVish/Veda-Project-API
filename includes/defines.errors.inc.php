@@ -152,3 +152,4 @@
     define("ERROR_150","Unable to delete user lesson plans.");define("DEBUGERROR_150","Unable to delete user lesson plan in UserLessonPlan::delete().");
     define("ERROR_151","You have already added this module.");define("DEBUGERROR_151","Unable to save user lesson plan in UserLessonPlan::save() since it is a duplicate.");
     define("ERROR_152","Unable to load URI from Id.");define("DEBUGERROR_152","Unable to load URI from Id in Material::loadIdFromURI().");
+    define("ERROR_153","Unable to add Lesson Plan Addition.");define("DEBUGERROR_153","Unable to add Lesson Plan Addition in lessonPlanLesson::addAddition().");

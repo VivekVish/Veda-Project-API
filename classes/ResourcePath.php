@@ -15,7 +15,7 @@
         {
             $path = trim($pathString, "/");
             $pathArray = explode("/", $path);
-
+            
             if($pathArray[0]=="data")
             {
                 switch(count($pathArray))
@@ -131,6 +131,10 @@
                             {
                                 $this->file = "lesson.php";
                             }
+                        }
+                        else if($pathArray[1]=="lessonplan"&&$pathArray[6]=="inclusion")
+                        {
+                            $this->file = "lessonPlanLessonAdditionInclusion.php";
                         }
                         else if($pathArray[1]=="lessonplan"&&$pathArray[5]=="quiz")
                         {

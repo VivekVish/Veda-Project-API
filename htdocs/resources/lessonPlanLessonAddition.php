@@ -25,7 +25,8 @@
             {
                 if($lessonPlanLesson->loadAddition($uriArr[5]))
                 {
-                    if($lessonPlanLesson->loadCustomAdditionByPayload(json_decode($this->request->getPayload())))
+                    $payload = json_decode($this->request->getPayload());
+                    if($lessonPlanLesson->loadCustomAdditionByPayload($payload))
                     {
                         if($lessonPlanLesson->saveCustomAddition())
                         {
